@@ -56,7 +56,7 @@ function TextLoop({ items }: { items: string[] }) {
   return <span className="text-loop" aria-live="polite"><span key={items[active]}>{items[active]}</span></span>;
 }
 
-function ScrollRevealText({ words, breakAfter = [], accentFrom = -1 }: { words: string[]; breakAfter?: number[]; accentFrom?: number }) {
+function ScrollRevealText({ words, breakAfter = [], accentFrom = -1, effect = "blur-up" }: { words: string[]; breakAfter?: number[]; accentFrom?: number; effect?: "blur-up" | "glide" | "sharpen" }) {
   const revealRef = useRef<HTMLSpanElement>(null);
   useEffect(() => {
     const target = revealRef.current;
@@ -70,7 +70,7 @@ function ScrollRevealText({ words, breakAfter = [], accentFrom = -1 }: { words: 
     observer.observe(target);
     return () => observer.disconnect();
   }, []);
-  return <span ref={revealRef} className="scroll-reveal-text">{words.map((word, index) => <span key={`${word}-${index}`} className={index >= accentFrom ? "accent" : ""} style={{ "--word-index": index } as CSSProperties}>{word}{breakAfter.includes(index) && <br />}{index < words.length - 1 && !breakAfter.includes(index) ? " " : ""}</span>)}</span>;
+  return <span ref={revealRef} className={`scroll-reveal-text effect-${effect}`}>{words.map((word, index) => <span key={`${word}-${index}`} className={index >= accentFrom ? "accent" : ""} style={{ "--word-index": index } as CSSProperties}>{word}{breakAfter.includes(index) && <br />}{index < words.length - 1 && !breakAfter.includes(index) ? " " : ""}</span>)}</span>;
 }
 
 export default function Home() {
@@ -282,7 +282,7 @@ export default function Home() {
 
       <section className="programs" id="programs" data-reveal>
         <div className="section-top" data-reveal-item><p className="eyebrow"><i /> Select your discipline</p><span>03 PRACTICAL PROGRAMS</span></div>
-        <h2 data-reveal-item>Find your <em>attack surface.</em></h2>
+        <h2 data-reveal-item><ScrollRevealText words={["Find", "your", "attack", "surface."]} breakAfter={[1]} accentFrom={2} effect="glide" /></h2>
         <div className="reflective-card" data-reveal-item tabIndex={0} onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--reflect-x", `${((event.clientX - rect.left) / rect.width) * 100}%`); event.currentTarget.style.setProperty("--reflect-y", `${((event.clientY - rect.top) / rect.height) * 100}%`); }} onMouseLeave={(event) => { event.currentTarget.style.setProperty("--reflect-x", "50%"); event.currentTarget.style.setProperty("--reflect-y", "50%"); }}>
           <div className="reflective-card-glare" aria-hidden="true" />
           <div className="reflective-card-top"><span>FEATURED LAB / PX—01</span><span>LIVE / 08 WEEKS</span></div>
@@ -304,7 +304,7 @@ export default function Home() {
 
       <section className="protocol" data-reveal>
         <p className="eyebrow"><i /> After enrolment</p>
-        <div className="protocol-grid" data-reveal-item><h2>Your seat is<br /><em>personally confirmed.</em></h2><p>Once your payment is successful, your tutor contacts you directly on WhatsApp with onboarding details and your daily Google Meet link. No portal maze. No automated handoff.</p></div>
+        <div className="protocol-grid" data-reveal-item><h2><ScrollRevealText words={["Your", "seat", "is", "personally", "confirmed."]} breakAfter={[2]} accentFrom={3} effect="sharpen" /></h2><p>Once your payment is successful, your tutor contacts you directly on WhatsApp with onboarding details and your daily Google Meet link. No portal maze. No automated handoff.</p></div>
         <div className="steps" data-reveal-item><div><b>01</b><h3>Choose a programme</h3><p>Open any course for its curriculum and seat details.</p></div><div><b>02</b><h3>Secure your seat</h3><p>Complete payment through the course checkout.</p></div><div><b>03</b><h3>Meet your tutor</h3><p>Receive your Google Meet schedule directly on WhatsApp.</p></div></div>
       </section>
 
