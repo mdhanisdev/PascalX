@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, MouseEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
 import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
 import { TextLoop } from "@/components/ui/TextLoop";
 import { Preloader } from "@/components/ui/Preloader";
@@ -65,6 +65,8 @@ export default function Home() {
   const [contactSent, setContactSent] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [navHidden, setNavHidden] = useState(false);
+  const [pageReady, setPageReady] = useState(false);
+  const handlePreloaderComplete = useCallback(() => setPageReady(true), []);
   const heroRef = useRef<HTMLElement>(null);
   const scrollExpandRef = useRef<HTMLElement>(null);
   const strandsCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -223,8 +225,8 @@ export default function Home() {
 
   return (
     <>
-      <Preloader />
-      <main className="min-h-screen">
+      <Preloader onComplete={handlePreloaderComplete} />
+      <main className={`min-h-screen page-transition${pageReady ? " is-ready" : ""}`}>
       <nav className={`nav${navHidden ? " nav-hidden" : ""}`}>
         <div className="nav-inner"><a className="brand" href="#top" onClick={(event) => smoothNavigate(event, "#top")} aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="#programs" onClick={(event) => smoothNavigate(event, "#programs")}>Programs</a><a href="#method" onClick={(event) => smoothNavigate(event, "#method")}>Method</a><a href="#contact" onClick={(event) => smoothNavigate(event, "#contact")}>Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
       </nav>

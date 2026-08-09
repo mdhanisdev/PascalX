@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export function Preloader() {
+export function Preloader({ onComplete }: { onComplete?: () => void }) {
   const [isLeaving, setIsLeaving] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -20,6 +20,7 @@ export function Preloader() {
     const removeTimer = window.setTimeout(() => {
       document.body.style.overflow = previousOverflow;
       setIsVisible(false);
+      onComplete?.();
     }, 2000);
 
     return () => {
@@ -28,7 +29,7 @@ export function Preloader() {
       window.clearTimeout(leaveTimer);
       window.clearTimeout(removeTimer);
     };
-  }, []);
+  }, [onComplete]);
 
   if (!isVisible) return null;
 
