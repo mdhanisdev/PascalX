@@ -47,6 +47,15 @@ function Arrow() {
   return <span className="arrow" aria-hidden="true">↗</span>;
 }
 
+function TextLoop({ items }: { items: string[] }) {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    const timer = window.setInterval(() => setActive((current) => (current + 1) % items.length), 2600);
+    return () => window.clearInterval(timer);
+  }, [items.length]);
+  return <span className="text-loop" aria-live="polite"><span key={items[active]}>{items[active]}</span></span>;
+}
+
 export default function Home() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [paymentState, setPaymentState] = useState<"form" | "processing" | "success">("form");
@@ -193,7 +202,7 @@ export default function Home() {
           <div className="hero-shade" />
           <div className="hero-copy">
             <p className="eyebrow"><i /> Live cyber education · cohort 01</p>
-            <h1>Learn to think<br /><em>like the threat.</em></h1>
+            <h1>Learn to think<br /><em><TextLoop items={["like the threat.", "through evidence.", "under pressure.", "one step ahead."]} /></em></h1>
             <p className="hero-description">Live, practical cybersecurity training for people who want more than passive lessons.</p>
           </div>
           <div className="hero-bottom"><span>SCROLL TO ENTER</span><span className="scroll-mark">↓</span><span>01—04</span></div>
