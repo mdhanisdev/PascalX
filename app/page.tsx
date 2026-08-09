@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 
 type Course = {
   code: string;
@@ -49,6 +50,8 @@ function Arrow() {
 export default function Home() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [paymentState, setPaymentState] = useState<"form" | "processing" | "success">("form");
+  const [checkoutError, setCheckoutError] = useState("");
+  const { data: session, status: authStatus } = useSession();
   const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -91,10 +94,25 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  function beginCheckout(event: FormEvent<HTMLFormElement>) {
+  async function beginCheckout(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setCheckoutError("");
+    if (!session?.user) {
+      await signIn("google", { redirectTo: window.location.href });
+      return;
+    }
     setPaymentState("processing");
-    window.setTimeout(() => setPaymentState("success"), 1250);
+    const form = new FormData(event.currentTarget);
+    try {
+      const courseId = selectedCourse?.code === "PX/01" ? "ethical-hacking-foundations" : selectedCourse?.code === "PX/02" ? "web-application-security" : "soc-analyst-launchpad";
+      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ courseId, whatsappNumber: form.get("whatsappNumber") }) });
+      const result = await response.json() as { url?: string; error?: string };
+      if (!response.ok || !result.url) throw new Error(result.error ?? "Checkout is not available yet.");
+      window.location.assign(result.url);
+    } catch (error) {
+      setPaymentState("form");
+      setCheckoutError(error instanceof Error ? error.message : "Checkout is not available yet.");
+    }
   }
 
   function closeModal() {
@@ -106,7 +124,7 @@ export default function Home() {
     <main>
       <nav className="nav">
         <a className="brand" href="#top" aria-label="PascalX home">PASCAL<span>X</span></a>
-        <div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div>
+        <div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a>{session?.user ? <span className="nav-session">SIGNED IN</span> : <button className="nav-signin" onClick={() => signIn("google", { redirectTo: window.location.href })}>Sign in</button>}</div>
         <a href="#programs" className="nav-cta">Explore courses <Arrow /></a>
       </nav>
 
@@ -180,7 +198,7 @@ export default function Home() {
       {selectedCourse && <div className="modal-backdrop" role="presentation" onMouseDown={closeModal}>
         <section className="modal" role="dialog" aria-modal="true" aria-labelledby="course-title" onMouseDown={(event) => event.stopPropagation()}>
           <button className="close" onClick={closeModal} aria-label="Close course details">×</button>
-          {paymentState === "success" ? <div className="success"><span>✓</span><p className="eyebrow"><i /> Payment received</p><h2>Welcome to<br /><em>{selectedCourse.title}.</em></h2><p>Your tutor will contact you on WhatsApp with onboarding and your live Google Meet schedule.</p><button className="solid-button" onClick={closeModal}>Done <Arrow /></button></div> : <><div className="modal-course"><p className="eyebrow"><i /> {selectedCourse.code} · {selectedCourse.duration}</p><h2 id="course-title">{selectedCourse.title}</h2><p>{selectedCourse.overview}</p><div className="module-list">{selectedCourse.modules.map((module, index) => <span key={module}><b>0{index + 1}</b>{module}</span>)}</div></div><form className="checkout" onSubmit={beginCheckout}><p>Reserve your live seat</p><strong>{selectedCourse.price}</strong><label>Full name<input required placeholder="Your name" /></label><label>WhatsApp number<input required type="tel" placeholder="+91 00000 00000" /></label><label>Email address<input required type="email" placeholder="you@email.com" /></label><button className="solid-button" type="submit" disabled={paymentState === "processing"}>{paymentState === "processing" ? "Processing secure payment…" : <>Continue to payment <Arrow /></>}</button><small>Demo checkout — connect Razorpay or Stripe before accepting live payments.</small></form></>}
+          {paymentState === "success" ? <div className="success"><span>✓</span><p className="eyebrow"><i /> Payment received</p><h2>Welcome to<br /><em>{selectedCourse.title}.</em></h2><p>Your tutor will contact you on WhatsApp with onboarding and your live Google Meet schedule.</p><button className="solid-button" onClick={closeModal}>Done <Arrow /></button></div> : <><div className="modal-course"><p className="eyebrow"><i /> {selectedCourse.code} · {selectedCourse.duration}</p><h2 id="course-title">{selectedCourse.title}</h2><p>{selectedCourse.overview}</p><div className="module-list">{selectedCourse.modules.map((module, index) => <span key={module}><b>0{index + 1}</b>{module}</span>)}</div></div><form className="checkout" onSubmit={beginCheckout}><p>Reserve your live seat</p><strong>{selectedCourse.price}</strong>{!session?.user && <div className="auth-required">Sign in with Google is required before payment.</div>}<label>Full name<input required name="fullName" placeholder="Your name" /></label><label>WhatsApp number<input required name="whatsappNumber" type="tel" placeholder="+91 00000 00000" /></label><label>Email address<input required name="email" type="email" placeholder="you@email.com" /></label>{checkoutError && <div className="checkout-error">{checkoutError}</div>}<button className="solid-button" type="submit" disabled={paymentState === "processing" || authStatus === "loading"}>{paymentState === "processing" ? "Opening secure payment…" : !session?.user ? <>Sign in to continue <Arrow /></> : <>Continue to secure payment <Arrow /></>}</button><small>After Stripe verifies payment, the tutor handoff is recorded and your WhatsApp onboarding message can be dispatched.</small></form></>}
         </section>
       </div>}
     </main>
