@@ -79,6 +79,7 @@ export default function Home() {
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [authSubmitted, setAuthSubmitted] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+  const [contactSent, setContactSent] = useState(false);
   const [navHidden, setNavHidden] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const scrollExpandRef = useRef<HTMLElement>(null);
@@ -334,7 +335,7 @@ export default function Home() {
         <div className="footer-orbit" aria-hidden="true"><span /><span /><span /></div>
         <div className="footer-top"><p className="eyebrow"><i /> NEXT COHORT · LIVE ONLINE</p><span className="footer-signal">● SEATS OPEN</span></div>
         <div className="footer-cta"><h2>Make your<br /><em>next move.</em></h2><div><p>Choose a programme and reserve your live learning seat. Your tutor confirms the next steps personally on WhatsApp.</p><a href="#programs" className="footer-button">Explore programmes <Arrow /></a></div></div>
-        <div className="footer-contact"><div><p className="eyebrow"><i /> Contact PascalX</p><h3>Have a question<br />before you start?</h3></div><div className="footer-contact-links"><a href="mailto:hello@pascalx.security"><span>EMAIL</span>hello@pascalx.security <Arrow /></a><a href="https://wa.me/919999999999" target="_blank" rel="noreferrer"><span>WHATSAPP</span>Message the tutor <Arrow /></a></div></div>
+        <div className="footer-contact"><div><p className="eyebrow"><i /> Contact PascalX</p><h3>Have a question<br />before you start?</h3></div>{contactSent ? <div className="footer-contact-success"><span>âœ“</span><strong>Message received.</strong><p>This demo form is ready to connect to your contact workflow.</p><button type="button" onClick={() => setContactSent(false)}>Send another message</button></div> : <form className="footer-contact-form" onSubmit={(event) => { event.preventDefault(); setContactSent(true); }}><label>Full name<input required name="name" placeholder="Your name" /></label><label>Email address<input required type="email" name="email" placeholder="you@email.com" /></label><label>Message<textarea required name="message" rows={3} placeholder="How can we help?" /></label><button type="submit">Send message <Arrow /></button></form>}</div>
         <div className="footer-bottom"><div className="footer-brand">PASCAL<span>X</span></div><div className="footer-links"><a href="#programs">Programmes</a><a href="#method">Learning method</a><a href="#top">Back to top ↑</a></div><div className="footer-meta">© 2026 PASCALX<br />CYBERSECURITY LEARNING<br /><br />LEARN WITH PERMISSION.<br />PRACTISE WITH PURPOSE.</div></div>
       </footer>
 
