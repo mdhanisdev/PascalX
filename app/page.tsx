@@ -170,7 +170,12 @@ export default function Home() {
         <div className="steps"><div><b>01</b><h3>Choose a programme</h3><p>Open any course for its curriculum and seat details.</p></div><div><b>02</b><h3>Secure your seat</h3><p>Complete payment through the course checkout.</p></div><div><b>03</b><h3>Meet your tutor</h3><p>Receive your Google Meet schedule directly on WhatsApp.</p></div></div>
       </section>
 
-      <footer id="contact"><div className="footer-brand">PASCAL<span>X</span></div><div><p>READY FOR THE NEXT<br />COHORT?</p><a href="#programs">Choose your programme <Arrow /></a></div><div className="footer-meta">© 2026 PASCALX<br />CYBERSECURITY LEARNING<br /><br />LEARN WITH PERMISSION.<br />PRACTISE WITH PURPOSE.</div></footer>
+      <footer id="contact">
+        <div className="footer-orbit" aria-hidden="true"><span /><span /><span /></div>
+        <div className="footer-top"><p className="eyebrow"><i /> NEXT COHORT · LIVE ONLINE</p><span className="footer-signal">● SEATS OPEN</span></div>
+        <div className="footer-cta"><h2>Make your<br /><em>next move.</em></h2><div><p>Choose a programme and reserve your live learning seat. Your tutor confirms the next steps personally on WhatsApp.</p><a href="#programs" className="footer-button">Explore programmes <Arrow /></a></div></div>
+        <div className="footer-bottom"><div className="footer-brand">PASCAL<span>X</span></div><div className="footer-links"><a href="#programs">Programmes</a><a href="#method">Learning method</a><a href="#top">Back to top ↑</a></div><div className="footer-meta">© 2026 PASCALX<br />CYBERSECURITY LEARNING<br /><br />LEARN WITH PERMISSION.<br />PRACTISE WITH PURPOSE.</div></div>
+      </footer>
 
       {selectedCourse && <div className="modal-backdrop" role="presentation" onMouseDown={closeModal}>
         <section className="modal" role="dialog" aria-modal="true" aria-labelledby="course-title" onMouseDown={(event) => event.stopPropagation()}>
