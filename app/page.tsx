@@ -55,6 +55,7 @@ export default function Home() {
   const [authLoading, setAuthLoading] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const scrollExpandRef = useRef<HTMLElement>(null);
+  const strandsCanvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -84,6 +85,54 @@ export default function Home() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
+  }, []);
+
+  useEffect(() => {
+    const canvas = strandsCanvasRef.current;
+    const context = canvas?.getContext("2d");
+    if (!canvas || !context) return;
+    let width = 0;
+    let height = 0;
+    let tick = 0;
+    let frame = 0;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const resize = () => {
+      const bounds = canvas.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      width = bounds.width;
+      height = bounds.height;
+      canvas.width = width * ratio;
+      canvas.height = height * ratio;
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    };
+    const draw = () => {
+      context.clearRect(0, 0, width, height);
+      for (let strand = 0; strand < 20; strand += 1) {
+        const center = height * (0.16 + strand * 0.036);
+        context.beginPath();
+        for (let x = -20; x <= width + 20; x += 12) {
+          const wave = Math.sin(x * 0.008 + strand * 0.48 + tick * (0.7 + strand * 0.018)) * height * 0.1;
+          const ripple = Math.sin(x * 0.019 + strand * 0.7 + tick * 0.45) * height * 0.025;
+          const y = center + wave + ripple;
+          if (x === -20) context.moveTo(x, y); else context.lineTo(x, y);
+        }
+        context.strokeStyle = strand % 4 === 0 ? "rgba(216,255,66,.56)" : "rgba(131,169,255,.28)";
+        context.lineWidth = strand % 4 === 0 ? 1.2 : 0.7;
+        context.stroke();
+        const nodeX = width * (0.18 + ((strand * 0.17) % 0.68));
+        const nodeY = center + Math.sin(nodeX * 0.008 + strand * 0.48 + tick * (0.7 + strand * 0.018)) * height * 0.1;
+        context.fillStyle = strand % 4 === 0 ? "#d8ff42" : "#83a9ff";
+        context.beginPath();
+        context.arc(nodeX, nodeY, strand % 4 === 0 ? 2.5 : 1.5, 0, Math.PI * 2);
+        context.fill();
+      }
+    };
+    const animate = () => { tick += 0.016; draw(); frame = window.requestAnimationFrame(animate); };
+    resize();
+    draw();
+    if (!reduceMotion) frame = window.requestAnimationFrame(animate);
+    window.addEventListener("resize", resize);
+    return () => { window.removeEventListener("resize", resize); if (frame) window.cancelAnimationFrame(frame); };
   }, []);
 
   useEffect(() => {
@@ -184,6 +233,13 @@ export default function Home() {
           </div>
           <div className="gradual-blur-mask" aria-hidden="true"><i /><i /><i /><i /><i /></div>
         </div>
+      </section>
+
+      <section className="strands-section" data-reveal aria-label="Cybersecurity signal strands">
+        <canvas ref={strandsCanvasRef} aria-hidden="true" />
+        <div className="strands-overlay" />
+        <div className="strands-copy"><p className="eyebrow"><i /> Signal / network / response</p><h2>See the<br /><em>connections.</em></h2><p>Security work is rarely one alert. It is the pattern between signals, decisions, and people.</p></div>
+        <div className="strands-meta"><span>LIVE SIGNAL FIELD</span><span>PX / 04—04</span></div>
       </section>
 
       <section className="field-notes" data-reveal>
