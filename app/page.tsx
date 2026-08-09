@@ -1,7 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
+import { TextLoop } from "@/components/ui/TextLoop";
+import { courses as featureCourses } from "@/features/courses/data";
 
 type Course = {
   code: string;
@@ -13,7 +16,7 @@ type Course = {
   modules: string[];
 };
 
-const courses: Course[] = [
+const legacyCourses: Course[] = [
   {
     code: "PX/01",
     title: "Ethical Hacking Foundations",
@@ -43,42 +46,13 @@ const courses: Course[] = [
   },
 ];
 
-const faqs = [
-  ["Are the classes live or recorded?", "PascalX programmes are live and tutor-led. You learn through guided practice, ask questions in the moment, and work through real security scenarios with your cohort."],
-  ["Do I need prior cybersecurity experience?", "No. Each programme lists its starting level clearly, and the curriculum moves from foundations into practical workflows at a steady pace."],
-  ["How do the labs work?", "You receive safe, guided environments to practise reconnaissance, testing, investigation, and reporting without touching systems you do not own."],
-  ["What happens after I enrol?", "After the demo checkout is completed, the tutor contacts you on WhatsApp with onboarding details, class timing, and the Google Meet link."],
-  ["Can I ask questions before choosing a programme?", "Yes. Use the contact form below and share what you want to learn. We can point you toward the most suitable programme."],
-] as const;
+import { faqs } from "@/features/faq/data";
+
+const courses = featureCourses;
+void legacyCourses;
 
 function Arrow() {
   return <span className="arrow" aria-hidden="true">↗</span>;
-}
-
-function TextLoop({ items }: { items: string[] }) {
-  const [active, setActive] = useState(0);
-  useEffect(() => {
-    const timer = window.setInterval(() => setActive((current) => (current + 1) % items.length), 2600);
-    return () => window.clearInterval(timer);
-  }, [items.length]);
-  return <span className="text-loop" aria-live="polite"><span key={items[active]}>{items[active]}</span></span>;
-}
-
-function ScrollRevealText({ words, breakAfter = [], accentFrom = -1, effect = "blur-up" }: { words: string[]; breakAfter?: number[]; accentFrom?: number; effect?: "blur-up" | "glide" | "sharpen" }) {
-  const revealRef = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    const target = revealRef.current;
-    if (!target) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        target.classList.add("is-visible");
-        observer.disconnect();
-      }
-    }, { threshold: 0.25 });
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, []);
-  return <span ref={revealRef} className={`scroll-reveal-text effect-${effect}`}>{words.map((word, index) => <span key={`${word}-${index}`} className={index >= accentFrom ? "accent" : ""} style={{ "--word-index": index } as CSSProperties}>{word}{breakAfter.includes(index) && <br />}</span>)}</span>;
 }
 
 export default function Home() {
@@ -237,7 +211,7 @@ export default function Home() {
   }
 
   return (
-    <main>
+    <main className="min-h-screen">
       <nav className={`nav${navHidden ? " nav-hidden" : ""}`}>
         <div className="nav-inner"><a className="brand" href="#top" aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
       </nav>
