@@ -94,6 +94,13 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (!authMode) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, [authMode]);
+
+  useEffect(() => {
     const section = scrollExpandRef.current;
     if (!section) return;
     let frame = 0;
