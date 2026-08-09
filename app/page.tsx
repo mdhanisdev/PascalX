@@ -51,12 +51,6 @@ const faqs = [
   ["Can I ask questions before choosing a programme?", "Yes. Use the contact form below and share what you want to learn. We can point you toward the most suitable programme."],
 ] as const;
 
-const testimonials = [
-  ["I stopped watching tutorials and started making decisions.", "Aarav M.", "PX/01 · Foundations"],
-  ["The tutor made the difficult parts feel workable. I always knew what to try next.", "Nisha R.", "PX/02 · Web Security"],
-  ["The reports I built gave me something concrete to talk about in interviews.", "Daniel K.", "PX/03 · SOC Launchpad"],
-] as const;
-
 function Arrow() {
   return <span className="arrow" aria-hidden="true">↗</span>;
 }
@@ -349,11 +343,6 @@ export default function Home() {
       <section className="faq-section" data-reveal aria-labelledby="faq-heading">
         <div className="faq-heading"><p className="eyebrow"><i /> Common questions</p><h2 id="faq-heading">Know before<br /><em>you begin.</em></h2></div>
         <div className="faq-list">{faqs.map(([question, answer], index) => <div className={`faq-item${openFaq === index ? " is-open" : ""}`} key={question}><button type="button" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{question}</strong><i aria-hidden="true">+</i></button><div className="faq-answer"><p>{answer}</p></div></div>)}</div>
-      </section>
-
-      <section className="testimonials-section" data-reveal aria-labelledby="testimonials-heading">
-        <div className="testimonials-heading"><p className="eyebrow"><i /> The learner experience</p><h2 id="testimonials-heading">Built for the<br /><em>moment it clicks.</em></h2><p>Sample learner notes for this frontend preview. Replace them with verified cohort feedback when the programme goes live.</p></div>
-        <div className="testimonials-grid">{testimonials.map(([quote, name, programme], index) => <figure className="testimonial-card" key={name}><div className="testimonial-mark">0{index + 1}</div><blockquote>“{quote}”</blockquote><figcaption><strong>{name}</strong><span>{programme}</span></figcaption></figure>)}</div>
       </section>
 
       <footer id="contact">
