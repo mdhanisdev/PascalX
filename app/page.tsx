@@ -173,6 +173,19 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="gradual-blur-section" data-reveal aria-label="PascalX field notes">
+        <div className="gradual-blur-heading"><div><p className="eyebrow"><i /> Gradual signal</p><h2>Clarity is<br /><em>a practice.</em></h2></div><span>FIELD NOTES / 03</span></div>
+        <div className="gradual-blur-window" tabIndex={0} aria-label="Scrollable cybersecurity field notes">
+          <div className="gradual-blur-content">
+            <article><span>01 / OBSERVE</span><h3>Slow down the first read.</h3><p>Good defenders notice what is missing before they chase what is loud.</p></article>
+            <article><span>02 / QUESTION</span><h3>Make the useful question unavoidable.</h3><p>Every investigation gets sharper when the next decision is clear.</p></article>
+            <article><span>03 / PROVE</span><h3>Leave a trail someone else can trust.</h3><p>Notes, evidence, and a calm handoff turn a technical win into durable work.</p></article>
+            <article><span>04 / REPEAT</span><h3>Build the habit, not the highlight.</h3><p>Practice is where intuition becomes a dependable operating rhythm.</p></article>
+          </div>
+          <div className="gradual-blur-mask" aria-hidden="true"><i /><i /><i /><i /><i /></div>
+        </div>
+      </section>
+
       <section className="field-notes" data-reveal>
         <div className="field-heading" data-reveal-item><div><p className="eyebrow"><i /> Intelligence, applied</p><span className="field-caption">A LIVE LEARNING CONTROL ROOM</span></div><div className="field-index">FIELD NOTE 001<br /><b>THREE WAYS TO TRAIN</b></div></div>
         <div className="field-layout" data-reveal-item>
