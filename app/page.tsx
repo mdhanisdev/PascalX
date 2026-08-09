@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 
 type Course = {
   code: string;
@@ -41,6 +41,90 @@ const courses: Course[] = [
     modules: ["SIEM fundamentals", "Alert triage", "Threat hunting", "Incident response playbooks"],
   },
 ];
+
+type ScrollStackProps = {
+  children: ReactNode;
+  className?: string;
+  itemDistance?: number;
+  itemStackDistance?: number;
+  stackPosition?: number;
+  baseScale?: number;
+  itemScale?: number;
+  rotationAmount?: number;
+};
+
+function ScrollStack({
+  children,
+  className = "",
+  itemDistance = 118,
+  itemStackDistance = 25,
+  stackPosition = 0.16,
+  baseScale = 0.86,
+  itemScale = 0.04,
+  rotationAmount = 0,
+}: ScrollStackProps) {
+  const stackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const stack = stackRef.current;
+    if (!stack) return;
+    const cards = Array.from(stack.querySelectorAll<HTMLElement>(".scroll-stack-card"));
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let frame = 0;
+
+    cards.forEach((card, index) => {
+      card.style.marginBottom = index === cards.length - 1 ? "0px" : `${itemDistance}px`;
+      card.style.transformOrigin = "top center";
+      card.style.willChange = reduceMotion ? "auto" : "transform, filter";
+      card.style.backfaceVisibility = "hidden";
+    });
+
+    const update = () => {
+      frame = 0;
+      if (reduceMotion) return;
+      const scrollTop = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const stackTop = viewportHeight * stackPosition;
+      const stackBottom = stack.getBoundingClientRect().bottom + scrollTop;
+      const pinEnd = stackBottom - viewportHeight * 0.52;
+
+      cards.forEach((card, index) => {
+        const cardTop = card.getBoundingClientRect().top + scrollTop;
+        const pinStart = cardTop - stackTop - itemStackDistance * index;
+        const scaleEnd = cardTop - viewportHeight * 0.1;
+        const progress = Math.min(1, Math.max(0, (scrollTop - pinStart) / Math.max(1, scaleEnd - pinStart)));
+        const scale = 1 - progress * (1 - (baseScale + index * itemScale));
+        const isPinned = scrollTop >= pinStart && scrollTop <= pinEnd;
+        const translateY = isPinned
+          ? scrollTop - cardTop + stackTop + itemStackDistance * index
+          : scrollTop > pinEnd
+            ? pinEnd - cardTop + stackTop + itemStackDistance * index
+            : 0;
+        const rotation = rotationAmount * index * progress;
+        card.style.transform = `translate3d(0, ${translateY.toFixed(2)}px, 0) scale(${scale.toFixed(3)}) rotate(${rotation.toFixed(2)}deg)`;
+        card.style.zIndex = String(cards.length - index);
+      });
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [baseScale, itemDistance, itemScale, itemStackDistance, rotationAmount, stackPosition]);
+
+  return <div ref={stackRef} className={`scroll-stack ${className}`.trim()}>{children}<div className="scroll-stack-end" /></div>;
+}
+
+function ScrollStackItem({ children, className = "" }: { children: ReactNode; className?: string }) {
+  return <article className={`scroll-stack-card ${className}`.trim()}>{children}</article>;
+}
 
 function Arrow() {
   return <span className="arrow" aria-hidden="true">↗</span>;
@@ -145,10 +229,12 @@ export default function Home() {
         <div className="field-heading"><div><p className="eyebrow"><i /> Intelligence, applied</p><span className="field-caption">A LIVE LEARNING CONTROL ROOM</span></div><div className="field-index">FIELD NOTE 001<br /><b>THREE WAYS TO TRAIN</b></div></div>
         <div className="field-layout">
           <aside className="field-brief"><div className="brief-number">03</div><p className="brief-kicker">WAYS OF WORKING</p><p>Learn through the same habits that make a calm defender useful: observe closely, ask better questions, and leave evidence behind.</p><div className="brief-rule"><span>COHORT SIGNAL</span><b>ON / 24—7</b></div><div className="brief-rail" aria-hidden="true"><i /><i /><i /><i /><i /></div></aside>
-          <div className="field-board">
-            <article className="note-row live-card"><div className="note-row-index">01</div><div className="note-row-copy"><div className="note-top"><span>LIVE / ACTIVE</span><span>GUIDED LABS</span></div><h3>Live practice</h3><p>See how a tutor approaches a problem, then attempt it in a safe lab of your own.</p></div><span className="note-row-arrow">↗</span></article>
-            <article className="note-row cohort-card"><div className="note-row-index">02</div><div className="note-row-copy"><div className="note-top"><span>DIRECT / ACCESS</span><span>DIRECT ACCESS</span></div><h3>Small cohorts</h3><p>Ask the question. Share your screen. Get an answer while the learning is still happening.</p></div><span className="note-row-arrow">↗</span></article>
-            <article className="note-row work-card"><div className="note-row-index">03</div><div className="note-row-copy"><div className="note-top"><span>BUILD / PROVE</span><span>PROOF OF PRACTICE</span></div><h3>Defensible work</h3><p>Build a portfolio of reports, notes, and workflows that show how you think under pressure.</p></div><span className="note-row-arrow">↗</span></article>
+          <div className="field-board field-stack-board">
+            <ScrollStack itemDistance={126} itemStackDistance={24} stackPosition={0.16} baseScale={0.88} itemScale={0.035}>
+              <ScrollStackItem className="note-stack-card live-card"><div className="stack-card-index">01</div><div className="note-top"><span>LIVE / ACTIVE</span><span>GUIDED LABS</span></div><h3>Live practice</h3><p>See how a tutor approaches a problem, then attempt it in a safe lab of your own.</p><b>GUIDED LABS <Arrow /></b></ScrollStackItem>
+              <ScrollStackItem className="note-stack-card cohort-card"><div className="stack-card-index">02</div><div className="note-top"><span>DIRECT / ACCESS</span><span>DIRECT ACCESS</span></div><h3>Small cohorts</h3><p>Ask the question. Share your screen. Get an answer while the learning is still happening.</p><b>DIRECT ACCESS <Arrow /></b></ScrollStackItem>
+              <ScrollStackItem className="note-stack-card work-card"><div className="stack-card-index">03</div><div className="note-top"><span>BUILD / PROVE</span><span>PROOF OF PRACTICE</span></div><h3>Defensible work</h3><p>Build a portfolio of reports, notes, and workflows that show how you think under pressure.</p><b>PROOF OF PRACTICE <Arrow /></b></ScrollStackItem>
+            </ScrollStack>
           </div>
         </div>
       </section>
