@@ -71,21 +71,3 @@ body{font-size:16px}
 .note-row-copy p{max-width:535px;margin:0;color:#657078;font-size:16px;line-height:1.45;transition:color .3s ease}.note-row:hover .note-row-copy p{color:#bec7ca}
 .note-row-arrow{align-self:center;color:#5c72df;font-size:28px;line-height:1;transition:color .3s ease,transform .3s ease}.note-row:hover .note-row-arrow{color:var(--acid);transform:translate(3px,-3px)}
 @media (max-width:720px){.field-notes{padding-top:84px;padding-bottom:95px}.field-notes .field-heading{margin-bottom:44px}.field-index{text-align:left;margin-top:24px}.field-layout{grid-template-columns:1fr;gap:42px}.field-brief{min-height:355px;padding:25px 22px}.brief-number{font-size:94px}.brief-rule{margin-top:40px}.field-notes .note-row{grid-template-columns:38px minmax(0,1fr) 24px;gap:11px;padding:24px 0 26px}.field-notes .note-row:hover{padding-left:12px;padding-right:12px}.note-row-copy .note-top{display:block;line-height:1.6;margin-bottom:10px}.note-row-copy .note-top span:last-child{display:block;color:#89949a}.note-row-copy h3{font-size:32px}.note-row-copy p{font-size:15px}.note-row-arrow{font-size:22px}}
-
-/* React Bits-inspired scroll stack for the practice modes */
-.field-stack-board{display:block!important;border-top:0!important;min-height:680px}
-.scroll-stack{position:relative;padding-top:4vh;padding-bottom:38vh}
-.scroll-stack-card{position:relative;isolation:isolate;width:100%;min-height:390px;overflow:hidden}
-.note-stack-card{display:flex;flex-direction:column;padding:25px 29px 28px;border:1px solid rgba(255,255,255,.14);border-radius:18px;background:#0b0d10;color:var(--paper);box-shadow:0 22px 55px rgba(11,13,16,.2);transform:translateZ(0);transition:box-shadow .3s ease}
-.note-stack-card:before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(circle at 88% 12%,rgba(131,169,255,.25),transparent 34%),linear-gradient(135deg,transparent 56%,rgba(216,255,66,.12));pointer-events:none}
-.note-stack-card:after{content:"";position:absolute;right:28px;bottom:28px;width:42%;height:1px;background:linear-gradient(90deg,transparent,var(--acid));opacity:.5}
-.note-stack-card .stack-card-index{margin-bottom:35px;color:var(--acid);font:11px monospace;letter-spacing:.1em}
-.note-stack-card .note-top{display:flex;justify-content:space-between;gap:16px;margin:0 0 18px;color:#9fa7ab;font:10px monospace;letter-spacing:.1em}
-.note-stack-card h3{max-width:520px;margin:0 0 14px;font-size:clamp(38px,4.6vw,70px);line-height:.88;letter-spacing:-.08em}
-.note-stack-card p{max-width:465px;margin:0;color:#c1c6c6;font-size:16px;line-height:1.48}
-.note-stack-card b{margin-top:auto;padding-top:35px;color:var(--acid);font:11px monospace;letter-spacing:.1em}.note-stack-card b .arrow{font-size:17px}
-.note-stack-card.cohort-card{background:#111722}.note-stack-card.cohort-card:before{background:radial-gradient(circle at 84% 18%,rgba(131,169,255,.33),transparent 34%),linear-gradient(135deg,transparent 56%,rgba(131,169,255,.1))}.note-stack-card.cohort-card .stack-card-index{color:#83a9ff}.note-stack-card.cohort-card:after{background:linear-gradient(90deg,transparent,#83a9ff)}
-.note-stack-card.work-card{background:#10130f}.note-stack-card.work-card:before{background:radial-gradient(circle at 88% 14%,rgba(216,255,66,.2),transparent 32%),linear-gradient(135deg,transparent 56%,rgba(216,255,66,.12))}
-.scroll-stack-end{height:1px;width:100%}
-@media (max-width:720px){.field-stack-board{min-height:0}.scroll-stack{padding-top:2vh;padding-bottom:20vh}.scroll-stack-card{min-height:350px}.note-stack-card{padding:22px 21px 24px;border-radius:14px}.note-stack-card .stack-card-index{margin-bottom:28px}.note-stack-card .note-top{display:block;line-height:1.7;margin-bottom:18px}.note-stack-card .note-top span:last-child{display:block;color:#89949a}.note-stack-card h3{font-size:44px}.note-stack-card p{font-size:15px}.note-stack-card b{padding-top:30px}}
-@media (prefers-reduced-motion:reduce){.scroll-stack-card{transform:none!important}}
