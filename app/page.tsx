@@ -53,6 +53,7 @@ export default function Home() {
   const [authSubmitted, setAuthSubmitted] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
+  const scrollExpandRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -60,6 +61,28 @@ export default function Home() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const section = scrollExpandRef.current;
+    if (!section) return;
+    let frame = 0;
+    const updateExpand = () => {
+      frame = 0;
+      const rect = section.getBoundingClientRect();
+      const travel = Math.max(section.offsetHeight - window.innerHeight, 1);
+      const progress = Math.min(Math.max(-rect.top / travel, 0), 1);
+      section.style.setProperty("--expand-progress", progress.toFixed(4));
+    };
+    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(updateExpand); };
+    updateExpand();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   useEffect(() => {
@@ -139,6 +162,14 @@ export default function Home() {
       <section className="video-break" aria-label="Students learning cybersecurity">
         <video autoPlay muted loop playsInline preload="metadata"><source src="/media/classroom.mp4" type="video/mp4" /></video>
         <div className="video-break-copy"><span>THE LAB IS OPEN</span><strong>Observe. Test. Defend.</strong></div>
+      </section>
+
+      <section className="scroll-expand-section" ref={scrollExpandRef} aria-label="PascalX learning environment">
+        <div className="scroll-expand-sticky">
+          <div className="scroll-expand-media"><video autoPlay muted loop playsInline preload="metadata"><source src="/media/signal-grid.mp4" type="video/mp4" /></video><div className="scroll-expand-scrim" /><div className="scroll-expand-frame" /></div>
+          <div className="scroll-expand-copy"><span>FIELD NOTE / 02</span><strong>Go deeper<br /><em>on purpose.</em></strong><p>Every concept becomes a scenario, a decision, and a piece of defensible work.</p></div>
+          <div className="scroll-expand-meta"><span>SCROLL TO EXPAND</span><span>PX / 02—04</span></div>
+        </div>
       </section>
 
       <section className="field-notes" data-reveal>
