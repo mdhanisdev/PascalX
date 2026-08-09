@@ -173,17 +173,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="security-loop" data-reveal aria-label="Cybersecurity practice ecosystem">
-        <div className="security-loop-heading"><p className="eyebrow"><i /> The working vocabulary</p><span>TOOLS / METHODS / SIGNALS</span></div>
-        <div className="security-loop-viewport">
-          <div className="security-loop-track">
-            <div className="security-loop-set"><span className="security-logo"><b>OW</b>OWASP</span><span className="security-logo"><b>⌁</b>MITRE ATT&amp;CK</span><span className="security-logo"><b>≡</b>NIST</span><span className="security-logo"><b>⌘</b>KALI LINUX</span><span className="security-logo"><b>CV</b>CVE</span><span className="security-logo"><b>◉</b>SIEM</span><span className="security-logo"><b>01</b>SOC</span></div>
-            <div className="security-loop-set" aria-hidden="true"><span className="security-logo"><b>OW</b>OWASP</span><span className="security-logo"><b>⌁</b>MITRE ATT&amp;CK</span><span className="security-logo"><b>≡</b>NIST</span><span className="security-logo"><b>⌘</b>KALI LINUX</span><span className="security-logo"><b>CV</b>CVE</span><span className="security-logo"><b>◉</b>SIEM</span><span className="security-logo"><b>01</b>SOC</span></div>
-          </div>
-        </div>
-        <p className="security-loop-note">Not a list of badges. A shared language for doing the work.</p>
-      </section>
-
       <section className="field-notes" data-reveal>
         <div className="field-heading" data-reveal-item><div><p className="eyebrow"><i /> Intelligence, applied</p><span className="field-caption">A LIVE LEARNING CONTROL ROOM</span></div><div className="field-index">FIELD NOTE 001<br /><b>THREE WAYS TO TRAIN</b></div></div>
         <div className="field-layout" data-reveal-item>
