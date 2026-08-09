@@ -105,13 +105,3 @@ body{font-size:16px}
 .gradual-blur-mask{position:absolute;right:0;bottom:0;left:0;height:43%;pointer-events:none;z-index:2}.gradual-blur-mask i{position:absolute;right:0;left:0;display:block;height:25%;background:rgba(17,21,26,.55);-webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}.gradual-blur-mask i:nth-child(1){bottom:75%;opacity:.06;filter:blur(1px)}.gradual-blur-mask i:nth-child(2){bottom:50%;opacity:.14;filter:blur(2px)}.gradual-blur-mask i:nth-child(3){bottom:25%;opacity:.25;filter:blur(4px)}.gradual-blur-mask i:nth-child(4){bottom:0;opacity:.55;filter:blur(9px)}.gradual-blur-mask:after{content:"SCROLL TO CONTINUE";position:absolute;right:clamp(24px,5vw,75px);bottom:20px;color:var(--acid);font:10px monospace;letter-spacing:.14em}
 @media (max-width:720px){.gradual-blur-section{padding:86px 6vw 95px}.gradual-blur-heading{display:block;margin-bottom:38px}.gradual-blur-heading>span{display:block;margin-top:22px}.gradual-blur-window{height:430px;border-radius:13px}.gradual-blur-content{padding:28px 22px 150px}.gradual-blur-content h3{font-size:37px}.gradual-blur-content p{font-size:15px}.gradual-blur-mask:after{right:22px;font-size:9px}}
 @media (prefers-reduced-motion:reduce){.gradual-blur-content{scroll-behavior:auto}}
-
-/* A darker control-room surface distinguishes the Intelligence section */
-.field-notes{background:linear-gradient(135deg,#0d141d 0%,#111a26 58%,#0b1119 100%);color:var(--paper)}
-.field-notes:before{background:linear-gradient(90deg,rgba(131,169,255,.11) 1px,transparent 1px),linear-gradient(rgba(131,169,255,.07) 1px,transparent 1px);background-size:56px 56px;mask-image:linear-gradient(90deg,black,transparent 92%)}
-.field-notes .field-caption{color:#83a9ff}.field-notes .field-index{color:#8c9aa5}.field-notes .field-index b{color:var(--paper)}
-.field-notes .field-heading h2 em{color:#b6c9ff}
-.field-notes .field-board{border-top-color:rgba(255,255,255,.2)}
-.field-notes .note-row{color:var(--paper);border-bottom-color:rgba(255,255,255,.18)}
-.field-notes .note-row:hover{background:#1a2737;color:var(--paper)}
-.field-notes .note-row-copy .note-top{color:#83a9ff}.field-notes .note-row-copy p{color:#aebbc4}.field-notes .note-row:hover .note-row-copy p{color:#e0e8ec}.field-notes .note-row-index,.field-notes .note-row-arrow{color:var(--acid)}
