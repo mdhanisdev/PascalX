@@ -257,6 +257,13 @@ export default function Home() {
       <section className="programs" id="programs" data-reveal>
         <div className="section-top" data-reveal-item><p className="eyebrow"><i /> Select your discipline</p><span>03 PRACTICAL PROGRAMS</span></div>
         <h2 data-reveal-item>Find your <em>attack surface.</em></h2>
+        <div className="reflective-card" data-reveal-item tabIndex={0} onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--reflect-x", `${((event.clientX - rect.left) / rect.width) * 100}%`); event.currentTarget.style.setProperty("--reflect-y", `${((event.clientY - rect.top) / rect.height) * 100}%`); }} onMouseLeave={(event) => { event.currentTarget.style.setProperty("--reflect-x", "50%"); event.currentTarget.style.setProperty("--reflect-y", "50%"); }}>
+          <div className="reflective-card-glare" aria-hidden="true" />
+          <div className="reflective-card-top"><span>FEATURED LAB / PX—01</span><span>LIVE / 08 WEEKS</span></div>
+          <h3>Ethical Hacking<br /><em>Foundations.</em></h3>
+          <p>Build the attacker mindset safely through reconnaissance, web security, Linux, networking, and useful vulnerability reports.</p>
+          <div className="reflective-card-bottom"><span>BEGINNER → INTERMEDIATE</span><button type="button" onClick={() => { setPaymentState("form"); setSelectedCourse(courses[0]); }}>View programme <Arrow /></button></div>
+        </div>
         <div className="course-list" data-reveal-item>
           {courses.map((course, index) => (
             <button className="course" key={course.code} onClick={() => { setPaymentState("form"); setSelectedCourse(course); }}>
