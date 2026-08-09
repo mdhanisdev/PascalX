@@ -222,7 +222,7 @@ export default function Home() {
   return (
     <main>
       <nav className={`nav${navHidden ? " nav-hidden" : ""}`}>
-        <div className="nav-inner"><a className="brand" href="#top" aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
+        <div className="nav-inner"><a className="brand" href="#top" aria-label="PascalX home"><span className="brand-mark" aria-hidden="true">PX</span><span className="brand-word">PASCAL<span>X</span></span></a><div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
       </nav>
 
       <section className="hero" id="top" ref={heroRef}>
@@ -327,7 +327,7 @@ export default function Home() {
         <div className="footer-orbit" aria-hidden="true"><span /><span /><span /></div>
         <div className="footer-top"><p className="eyebrow"><i /> NEXT COHORT · LIVE ONLINE</p><span className="footer-signal">● SEATS OPEN</span></div>
         <div className="footer-cta"><h2>Make your<br /><em>next move.</em></h2><div><p>Choose a programme and reserve your live learning seat. Your tutor confirms the next steps personally on WhatsApp.</p><a href="#programs" className="footer-button">Explore programmes <Arrow /></a></div></div>
-        <div className="footer-bottom"><div className="footer-brand">PASCAL<span>X</span></div><div className="footer-links"><a href="#programs">Programmes</a><a href="#method">Learning method</a><a href="#top">Back to top ↑</a></div><div className="footer-meta">© 2026 PASCALX<br />CYBERSECURITY LEARNING<br /><br />LEARN WITH PERMISSION.<br />PRACTISE WITH PURPOSE.</div></div>
+        <div className="footer-bottom"><div className="footer-brand"><span className="brand-mark" aria-hidden="true">PX</span><span className="brand-word">PASCAL<span>X</span></span></div><div className="footer-links"><a href="#programs">Programmes</a><a href="#method">Learning method</a><a href="#top">Back to top ↑</a></div><div className="footer-meta">© 2026 PASCALX<br />CYBERSECURITY LEARNING<br /><br />LEARN WITH PERMISSION.<br />PRACTISE WITH PURPOSE.</div></div>
       </footer>
 
       {authMode && <div className="modal-backdrop" role="presentation" onMouseDown={() => setAuthMode(null)}>
