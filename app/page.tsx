@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 type Course = {
   code: string;
@@ -49,6 +49,7 @@ function Arrow() {
 export default function Home() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [paymentState, setPaymentState] = useState<"form" | "processing" | "success">("form");
+  const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -56,6 +57,38 @@ export default function Home() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const updateHero = () => {
+      const hero = heroRef.current;
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      const travel = Math.max(hero.offsetHeight - window.innerHeight, 1);
+      const progress = Math.min(Math.max(-rect.top / travel, 0), 1);
+      hero.style.setProperty("--hero-progress", progress.toFixed(4));
+    };
+    updateHero();
+    window.addEventListener("scroll", updateHero, { passive: true });
+    window.addEventListener("resize", updateHero);
+    return () => {
+      window.removeEventListener("scroll", updateHero);
+      window.removeEventListener("resize", updateHero);
+    };
+  }, []);
+
+  useEffect(() => {
+    const targets = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-revealed");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.14 });
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
   }, []);
 
   function beginCheckout(event: FormEvent<HTMLFormElement>) {
@@ -77,7 +110,7 @@ export default function Home() {
         <a href="#programs" className="nav-cta">Explore courses <Arrow /></a>
       </nav>
 
-      <section className="hero" id="top">
+      <section className="hero" id="top" ref={heroRef}>
         <div className="hero-sticky">
           <video className="hero-video" autoPlay muted loop playsInline preload="metadata">
             <source src="/media/signal-grid.mp4" type="video/mp4" />
@@ -93,7 +126,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="manifesto" id="method">
+      <section className="manifesto" id="method" data-reveal>
         <p className="eyebrow dark"><i /> The PascalX method</p>
         <div className="manifesto-grid">
           <h2>Security is not a chapter.<br />It is a <em>way of seeing.</em></h2>
@@ -107,7 +140,16 @@ export default function Home() {
         <div className="video-break-copy"><span>THE LAB IS OPEN</span><strong>Observe. Test. Defend.</strong></div>
       </section>
 
-      <section className="programs" id="programs">
+      <section className="field-notes" data-reveal>
+        <div className="field-heading"><p className="eyebrow"><i /> Intelligence, applied</p><h2>Built around<br /><em>the work itself.</em></h2></div>
+        <div className="field-board">
+          <article><span className="board-marker">[01]</span><h3>Live practice</h3><p>See how a tutor approaches a problem, then attempt it in a safe lab of your own.</p><b>GUIDED LABS</b></article>
+          <article><span className="board-marker">[02]</span><h3>Small cohorts</h3><p>Ask the question. Share your screen. Get an answer while the learning is still happening.</p><b>DIRECT ACCESS</b></article>
+          <article><span className="board-marker">[03]</span><h3>Defensible work</h3><p>Build a portfolio of reports, notes, and workflows that show how you think under pressure.</p><b>PROOF OF PRACTICE</b></article>
+        </div>
+      </section>
+
+      <section className="programs" id="programs" data-reveal>
         <div className="section-top"><p className="eyebrow"><i /> Select your discipline</p><span>03 PRACTICAL PROGRAMS</span></div>
         <h2>Find your <em>attack surface.</em></h2>
         <div className="course-list">
@@ -122,7 +164,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="protocol">
+      <section className="protocol" data-reveal>
         <p className="eyebrow"><i /> After enrolment</p>
         <div className="protocol-grid"><h2>Your seat is<br /><em>personally confirmed.</em></h2><p>Once your payment is successful, your tutor contacts you directly on WhatsApp with onboarding details and your daily Google Meet link. No portal maze. No automated handoff.</p></div>
         <div className="steps"><div><b>01</b><h3>Choose a programme</h3><p>Open any course for its curriculum and seat details.</p></div><div><b>02</b><h3>Secure your seat</h3><p>Complete payment through the course checkout.</p></div><div><b>03</b><h3>Meet your tutor</h3><p>Receive your Google Meet schedule directly on WhatsApp.</p></div></div>
