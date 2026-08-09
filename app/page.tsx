@@ -49,6 +49,8 @@ function Arrow() {
 export default function Home() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [paymentState, setPaymentState] = useState<"form" | "processing" | "success">("form");
+  const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
+  const [authSubmitted, setAuthSubmitted] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -107,6 +109,7 @@ export default function Home() {
       <nav className="nav">
         <a className="brand" href="#top" aria-label="PascalX home">PASCAL<span>X</span></a>
         <div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div>
+        <div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); }}>Sign up <Arrow /></button></div>
         <a href="#programs" className="nav-cta">Explore courses <Arrow /></a>
       </nav>
 
@@ -176,6 +179,13 @@ export default function Home() {
         <div className="footer-cta"><h2>Make your<br /><em>next move.</em></h2><div><p>Choose a programme and reserve your live learning seat. Your tutor confirms the next steps personally on WhatsApp.</p><a href="#programs" className="footer-button">Explore programmes <Arrow /></a></div></div>
         <div className="footer-bottom"><div className="footer-brand">PASCAL<span>X</span></div><div className="footer-links"><a href="#programs">Programmes</a><a href="#method">Learning method</a><a href="#top">Back to top ↑</a></div><div className="footer-meta">© 2026 PASCALX<br />CYBERSECURITY LEARNING<br /><br />LEARN WITH PERMISSION.<br />PRACTISE WITH PURPOSE.</div></div>
       </footer>
+
+      {authMode && <div className="modal-backdrop" role="presentation" onMouseDown={() => setAuthMode(null)}>
+        <section className="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title" onMouseDown={(event) => event.stopPropagation()}>
+          <button className="close" onClick={() => setAuthMode(null)} aria-label="Close authentication dialog">×</button>
+          {authSubmitted ? <div className="auth-complete"><span>✓</span><p className="eyebrow"><i /> Demo account ready</p><h2>You&apos;re on<br /><em>the list.</em></h2><p>This is a frontend preview. Connect Auth.js later to make account creation and sign-in live.</p><button className="solid-button" onClick={() => setAuthMode(null)}>Continue exploring <Arrow /></button></div> : <><p className="eyebrow"><i /> PascalX learner access</p><h2 id="auth-title">{authMode === "signin" ? <>Welcome<br /><em>back.</em></> : <>Start your<br /><em>practice.</em></>}</h2><form className="auth-form" onSubmit={(event) => { event.preventDefault(); setAuthSubmitted(true); }}><label>Email address<input required type="email" placeholder="you@email.com" /></label>{authMode === "signup" && <label>Your name<input required placeholder="Full name" /></label>}<label>Password<input required type="password" placeholder="••••••••" /></label><button className="solid-button" type="submit">{authMode === "signin" ? "Sign in" : "Create account"} <Arrow /></button></form><p className="auth-switch">{authMode === "signin" ? "New to PascalX?" : "Already learning with us?"} <button onClick={() => { setAuthMode(authMode === "signin" ? "signup" : "signin"); setAuthSubmitted(false); }}>{authMode === "signin" ? "Create an account" : "Sign in"}</button></p></>}
+        </section>
+      </div>}
 
       {selectedCourse && <div className="modal-backdrop" role="presentation" onMouseDown={closeModal}>
         <section className="modal" role="dialog" aria-modal="true" aria-labelledby="course-title" onMouseDown={(event) => event.stopPropagation()}>
