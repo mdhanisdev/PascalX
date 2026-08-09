@@ -7,10 +7,13 @@ export function Preloader() {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     const leaveTimer = window.setTimeout(() => setIsLeaving(true), 850);
     const removeTimer = window.setTimeout(() => setIsVisible(false), 1350);
 
     return () => {
+      document.body.style.overflow = previousOverflow;
       window.clearTimeout(leaveTimer);
       window.clearTimeout(removeTimer);
     };
