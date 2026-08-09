@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { CSSProperties, FormEvent, useEffect, useRef, useState } from "react";
 
 type Course = {
   code: string;
@@ -54,6 +54,23 @@ function TextLoop({ items }: { items: string[] }) {
     return () => window.clearInterval(timer);
   }, [items.length]);
   return <span className="text-loop" aria-live="polite"><span key={items[active]}>{items[active]}</span></span>;
+}
+
+function ScrollRevealText({ words, breakAfter = [], accentFrom = -1 }: { words: string[]; breakAfter?: number[]; accentFrom?: number }) {
+  const revealRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const target = revealRef.current;
+    if (!target) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        target.classList.add("is-visible");
+        observer.disconnect();
+      }
+    }, { threshold: 0.25 });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
+  return <span ref={revealRef} className="scroll-reveal-text">{words.map((word, index) => <span key={`${word}-${index}`} className={index >= accentFrom ? "accent" : ""} style={{ "--word-index": index } as CSSProperties}>{word}{breakAfter.includes(index) && <br />}{index < words.length - 1 && !breakAfter.includes(index) ? " " : ""}</span>)}</span>;
 }
 
 export default function Home() {
@@ -212,7 +229,7 @@ export default function Home() {
       <section className="manifesto" id="method" data-reveal>
         <p className="eyebrow dark"><i /> The PascalX method</p>
         <div className="manifesto-grid" data-reveal-item>
-          <h2>Security is not a chapter.<br />It is a <em>way of seeing.</em></h2>
+          <h2><ScrollRevealText words={["Security", "is", "not", "a", "chapter.", "It", "is", "a", "way", "of", "seeing."]} breakAfter={[4]} accentFrom={8} /></h2>
           <div className="manifesto-copy"><p>We turn curious learners into methodical defenders through guided labs, live instruction, and the habits real security work requires.</p><a href="#programs" className="text-link">See the programmes <Arrow /></a></div>
         </div>
         <div className="signal-row" data-reveal-item><span>LIVE INSTRUCTION</span><span>REAL-WORLD LABS</span><span>SMALL COHORTS</span><span>MENTOR DELIVERY</span></div>
