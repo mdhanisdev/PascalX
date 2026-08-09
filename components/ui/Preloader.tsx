@@ -12,15 +12,15 @@ export function Preloader() {
     document.body.style.overflow = "hidden";
     const progressTimer = window.setInterval(() => {
       setProgress((current) => Math.min(current + (current < 72 ? 4 : 2), 100));
-    }, 42);
+    }, 60);
     const leaveTimer = window.setTimeout(() => {
       setProgress(100);
       setIsLeaving(true);
-    }, 1180);
+    }, 2200);
     const removeTimer = window.setTimeout(() => {
       document.body.style.overflow = previousOverflow;
       setIsVisible(false);
-    }, 1350);
+    }, 2500);
 
     return () => {
       document.body.style.overflow = previousOverflow;
