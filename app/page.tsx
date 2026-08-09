@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 type Course = {
@@ -166,7 +167,7 @@ export default function Home() {
 
       <section className="scroll-expand-section" ref={scrollExpandRef} aria-label="PascalX learning environment">
         <div className="scroll-expand-sticky">
-          <div className="scroll-expand-media"><video autoPlay muted loop playsInline preload="metadata"><source src="/media/signal-grid.mp4" type="video/mp4" /></video><div className="scroll-expand-scrim" /><div className="scroll-expand-frame" /></div>
+          <div className="scroll-expand-media"><Image src="/media/cybersecurity-tips-1200-627.webp" alt="Cybersecurity learning tips" fill sizes="(max-width: 720px) 88vw, 76vw" priority /><div className="scroll-expand-scrim" /><div className="scroll-expand-frame" /></div>
           <div className="scroll-expand-copy"><span>FIELD NOTE / 02</span><strong>Go deeper<br /><em>on purpose.</em></strong><p>Every concept becomes a scenario, a decision, and a piece of defensible work.</p></div>
           <div className="scroll-expand-meta"><span>SCROLL TO EXPAND</span><span>PX / 02—04</span></div>
         </div>
