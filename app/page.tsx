@@ -105,9 +105,11 @@ export default function Home() {
   return (
     <main>
       <nav className="nav">
-        <a className="brand" href="#top" aria-label="PascalX home">PASCAL<span>X</span></a>
-        <div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div>
-        <a href="#programs" className="nav-cta">Explore courses <Arrow /></a>
+        <div className="nav-shell">
+          <a className="brand" href="#top" aria-label="PascalX home"><span className="brand-mark">PX</span><span>PASCAL<b>X</b></span></a>
+          <div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div>
+          <a href="#programs" className="nav-cta"><span className="nav-shield">◆</span> Explore courses <Arrow /></a>
+        </div>
       </nav>
 
       <section className="hero" id="top" ref={heroRef}>
