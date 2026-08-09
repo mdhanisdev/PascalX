@@ -43,6 +43,14 @@ const courses: Course[] = [
   },
 ];
 
+const faqs = [
+  ["Are the classes live or recorded?", "PascalX programmes are live and tutor-led. You learn through guided practice, ask questions in the moment, and work through real security scenarios with your cohort."],
+  ["Do I need prior cybersecurity experience?", "No. Each programme lists its starting level clearly, and the curriculum moves from foundations into practical workflows at a steady pace."],
+  ["How do the labs work?", "You receive safe, guided environments to practise reconnaissance, testing, investigation, and reporting without touching systems you do not own."],
+  ["What happens after I enrol?", "After the demo checkout is completed, the tutor contacts you on WhatsApp with onboarding details, class timing, and the Google Meet link."],
+  ["Can I ask questions before choosing a programme?", "Yes. Use the contact form below and share what you want to learn. We can point you toward the most suitable programme."],
+] as const;
+
 function Arrow() {
   return <span className="arrow" aria-hidden="true">↗</span>;
 }
@@ -80,6 +88,7 @@ export default function Home() {
   const [authSubmitted, setAuthSubmitted] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
   const [contactSent, setContactSent] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [navHidden, setNavHidden] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const scrollExpandRef = useRef<HTMLElement>(null);
@@ -329,6 +338,11 @@ export default function Home() {
         <p className="eyebrow"><i /> After enrolment</p>
         <div className="protocol-grid" data-reveal-item><h2><ScrollRevealText words={["Your", "seat", "is", "personally", "confirmed."]} breakAfter={[2]} accentFrom={3} effect="sharpen" /></h2><p>Once your payment is successful, your tutor contacts you directly on WhatsApp with onboarding details and your daily Google Meet link. No portal maze. No automated handoff.</p></div>
         <div className="steps" data-reveal-item><div><b>01</b><h3>Choose a programme</h3><p>Open any course for its curriculum and seat details.</p></div><div><b>02</b><h3>Secure your seat</h3><p>Complete payment through the course checkout.</p></div><div><b>03</b><h3>Meet your tutor</h3><p>Receive your Google Meet schedule directly on WhatsApp.</p></div></div>
+      </section>
+
+      <section className="faq-section" data-reveal aria-labelledby="faq-heading">
+        <div className="faq-heading"><p className="eyebrow"><i /> Common questions</p><h2 id="faq-heading">Know before<br /><em>you begin.</em></h2></div>
+        <div className="faq-list">{faqs.map(([question, answer], index) => <div className={`faq-item${openFaq === index ? " is-open" : ""}`} key={question}><button type="button" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{question}</strong><i aria-hidden="true">+</i></button><div className="faq-answer"><p>{answer}</p></div></div>)}</div>
       </section>
 
       <footer id="contact">
