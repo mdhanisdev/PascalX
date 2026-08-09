@@ -79,9 +79,11 @@ export default function Home() {
   const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
   const [authSubmitted, setAuthSubmitted] = useState(false);
   const [authLoading, setAuthLoading] = useState(false);
+  const [navHidden, setNavHidden] = useState(false);
   const heroRef = useRef<HTMLElement>(null);
   const scrollExpandRef = useRef<HTMLElement>(null);
   const strandsCanvasRef = useRef<HTMLCanvasElement>(null);
+  const lastScrollYRef = useRef(0);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -111,6 +113,19 @@ export default function Home() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
+  }, []);
+
+  useEffect(() => {
+    lastScrollYRef.current = window.scrollY;
+    const onScroll = () => {
+      const current = window.scrollY;
+      const delta = current - lastScrollYRef.current;
+      if (current < 20) setNavHidden(false);
+      else if (Math.abs(delta) > 4) setNavHidden(delta > 0);
+      lastScrollYRef.current = current;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -206,7 +221,7 @@ export default function Home() {
 
   return (
     <main>
-      <nav className="nav">
+      <nav className={`nav${navHidden ? " nav-hidden" : ""}`}>
         <div className="nav-inner"><a className="brand" href="#top" aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
       </nav>
 
