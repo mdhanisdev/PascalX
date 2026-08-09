@@ -146,4 +146,5 @@ body{font-size:16px}
 .nav-inner{background:transparent;backdrop-filter:none;border:0;box-shadow:none}
 /* Keep all display typography in one formal sans-serif family */
 em,.scroll-reveal-text>span.accent{font-family:inherit!important;font-style:normal!important;font-weight:inherit;letter-spacing:inherit}
+.hero h1 em,.manifesto h2 em,.field-notes h2 em,.programs h2 em,.protocol h2 em,.scroll-expand-copy strong em,.gradual-blur-heading h2 em,.strands-copy h2 em,.reflective-card h3 em,footer h2 em,.scroll-reveal-text>span.accent{background:linear-gradient(110deg,#3f7cff 5%,#9bc2ff 55%,#d9e7ff 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 .nav{transition:transform .32s cubic-bezier(.16,1,.3,1)}.nav.nav-hidden{transform:translateY(-100%)}
