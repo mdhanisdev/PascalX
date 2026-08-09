@@ -70,7 +70,7 @@ function ScrollRevealText({ words, breakAfter = [], accentFrom = -1, effect = "b
     observer.observe(target);
     return () => observer.disconnect();
   }, []);
-  return <span ref={revealRef} className={`scroll-reveal-text effect-${effect}`}>{words.map((word, index) => <span key={`${word}-${index}`} className={index >= accentFrom ? "accent" : ""} style={{ "--word-index": index } as CSSProperties}>{word}{breakAfter.includes(index) && <br />}{index < words.length - 1 && !breakAfter.includes(index) ? " " : ""}</span>)}</span>;
+  return <span ref={revealRef} className={`scroll-reveal-text effect-${effect}`}>{words.map((word, index) => <span key={`${word}-${index}`} className={index >= accentFrom ? "accent" : ""} style={{ "--word-index": index } as CSSProperties}>{word}{breakAfter.includes(index) && <br />}</span>)}</span>;
 }
 
 export default function Home() {
