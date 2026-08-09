@@ -141,11 +141,11 @@ export default function Home() {
       </section>
 
       <section className="field-notes" data-reveal>
-        <div className="field-heading"><p className="eyebrow"><i /> Intelligence, applied</p><h2>Built around<br /><em>the work itself.</em></h2></div>
+        <div className="field-heading"><div><p className="eyebrow"><i /> Intelligence, applied</p><span className="field-caption">A LIVE LEARNING CONTROL ROOM</span></div><h2>Built around<br /><em>the work itself.</em></h2></div>
         <div className="field-board">
-          <article><span className="board-marker">[01]</span><h3>Live practice</h3><p>See how a tutor approaches a problem, then attempt it in a safe lab of your own.</p><b>GUIDED LABS</b></article>
-          <article><span className="board-marker">[02]</span><h3>Small cohorts</h3><p>Ask the question. Share your screen. Get an answer while the learning is still happening.</p><b>DIRECT ACCESS</b></article>
-          <article><span className="board-marker">[03]</span><h3>Defensible work</h3><p>Build a portfolio of reports, notes, and workflows that show how you think under pressure.</p><b>PROOF OF PRACTICE</b></article>
+          <article className="note-card live-card"><div className="note-top"><span className="board-marker">[01]</span><span>LIVE / ACTIVE</span></div><div className="note-visual" aria-hidden="true"><i /><i /><i /></div><h3>Live practice</h3><p>See how a tutor approaches a problem, then attempt it in a safe lab of your own.</p><b>GUIDED LABS <Arrow /></b></article>
+          <article className="note-card cohort-card"><div className="note-top"><span className="board-marker">[02]</span><span>DIRECT / ACCESS</span></div><div className="note-visual" aria-hidden="true"><i /><i /><i /></div><h3>Small cohorts</h3><p>Ask the question. Share your screen. Get an answer while the learning is still happening.</p><b>DIRECT ACCESS <Arrow /></b></article>
+          <article className="note-card work-card"><div className="note-top"><span className="board-marker">[03]</span><span>BUILD / PROVE</span></div><div className="note-visual" aria-hidden="true"><i /><i /><i /></div><h3>Defensible work</h3><p>Build a portfolio of reports, notes, and workflows that show how you think under pressure.</p><b>PROOF OF PRACTICE <Arrow /></b></article>
         </div>
       </section>
 
