@@ -129,11 +129,11 @@ export default function Home() {
 
       <section className="manifesto" id="method" data-reveal>
         <p className="eyebrow dark"><i /> The PascalX method</p>
-        <div className="manifesto-grid">
+        <div className="manifesto-grid" data-reveal-item>
           <h2>Security is not a chapter.<br />It is a <em>way of seeing.</em></h2>
           <div className="manifesto-copy"><p>We turn curious learners into methodical defenders through guided labs, live instruction, and the habits real security work requires.</p><a href="#programs" className="text-link">See the programmes <Arrow /></a></div>
         </div>
-        <div className="signal-row"><span>LIVE INSTRUCTION</span><span>REAL-WORLD LABS</span><span>SMALL COHORTS</span><span>MENTOR DELIVERY</span></div>
+        <div className="signal-row" data-reveal-item><span>LIVE INSTRUCTION</span><span>REAL-WORLD LABS</span><span>SMALL COHORTS</span><span>MENTOR DELIVERY</span></div>
       </section>
 
       <section className="video-break" aria-label="Students learning cybersecurity">
@@ -142,8 +142,8 @@ export default function Home() {
       </section>
 
       <section className="field-notes" data-reveal>
-        <div className="field-heading"><div><p className="eyebrow"><i /> Intelligence, applied</p><span className="field-caption">A LIVE LEARNING CONTROL ROOM</span></div><div className="field-index">FIELD NOTE 001<br /><b>THREE WAYS TO TRAIN</b></div></div>
-        <div className="field-layout">
+        <div className="field-heading" data-reveal-item><div><p className="eyebrow"><i /> Intelligence, applied</p><span className="field-caption">A LIVE LEARNING CONTROL ROOM</span></div><div className="field-index">FIELD NOTE 001<br /><b>THREE WAYS TO TRAIN</b></div></div>
+        <div className="field-layout" data-reveal-item>
           <aside className="field-brief"><div className="brief-number">03</div><p className="brief-kicker">WAYS OF WORKING</p><p>Learn through the same habits that make a calm defender useful: observe closely, ask better questions, and leave evidence behind.</p><div className="brief-rule"><span>COHORT SIGNAL</span><b>ON / 24—7</b></div><div className="brief-rail" aria-hidden="true"><i /><i /><i /><i /><i /></div></aside>
           <div className="field-board">
             <article className="note-row live-card"><div className="note-row-index">01</div><div className="note-row-copy"><div className="note-top"><span>LIVE / ACTIVE</span><span>GUIDED LABS</span></div><h3>Live practice</h3><p>See how a tutor approaches a problem, then attempt it in a safe lab of your own.</p></div><span className="note-row-arrow">↗</span></article>
@@ -154,9 +154,9 @@ export default function Home() {
       </section>
 
       <section className="programs" id="programs" data-reveal>
-        <div className="section-top"><p className="eyebrow"><i /> Select your discipline</p><span>03 PRACTICAL PROGRAMS</span></div>
-        <h2>Find your <em>attack surface.</em></h2>
-        <div className="course-list">
+        <div className="section-top" data-reveal-item><p className="eyebrow"><i /> Select your discipline</p><span>03 PRACTICAL PROGRAMS</span></div>
+        <h2 data-reveal-item>Find your <em>attack surface.</em></h2>
+        <div className="course-list" data-reveal-item>
           {courses.map((course, index) => (
             <button className="course" key={course.code} onClick={() => { setPaymentState("form"); setSelectedCourse(course); }}>
               <span className="course-index">0{index + 1}</span>
@@ -170,8 +170,8 @@ export default function Home() {
 
       <section className="protocol" data-reveal>
         <p className="eyebrow"><i /> After enrolment</p>
-        <div className="protocol-grid"><h2>Your seat is<br /><em>personally confirmed.</em></h2><p>Once your payment is successful, your tutor contacts you directly on WhatsApp with onboarding details and your daily Google Meet link. No portal maze. No automated handoff.</p></div>
-        <div className="steps"><div><b>01</b><h3>Choose a programme</h3><p>Open any course for its curriculum and seat details.</p></div><div><b>02</b><h3>Secure your seat</h3><p>Complete payment through the course checkout.</p></div><div><b>03</b><h3>Meet your tutor</h3><p>Receive your Google Meet schedule directly on WhatsApp.</p></div></div>
+        <div className="protocol-grid" data-reveal-item><h2>Your seat is<br /><em>personally confirmed.</em></h2><p>Once your payment is successful, your tutor contacts you directly on WhatsApp with onboarding details and your daily Google Meet link. No portal maze. No automated handoff.</p></div>
+        <div className="steps" data-reveal-item><div><b>01</b><h3>Choose a programme</h3><p>Open any course for its curriculum and seat details.</p></div><div><b>02</b><h3>Secure your seat</h3><p>Complete payment through the course checkout.</p></div><div><b>03</b><h3>Meet your tutor</h3><p>Receive your Google Meet schedule directly on WhatsApp.</p></div></div>
       </section>
 
       <footer id="contact">
