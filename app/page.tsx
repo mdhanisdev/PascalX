@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, MouseEvent, useEffect, useRef, useState } from "react";
 import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
 import { TextLoop } from "@/components/ui/TextLoop";
 import { Preloader } from "@/components/ui/Preloader";
@@ -211,12 +211,22 @@ export default function Home() {
     setPaymentState("form");
   }
 
+  function smoothNavigate(event: MouseEvent<HTMLAnchorElement>, target: string) {
+    event.preventDefault();
+    const lenis = window.__pascalxLenis;
+    if (lenis) {
+      lenis.scrollTo(target, { offset: 0, duration: 1.15 });
+      return;
+    }
+    document.querySelector(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   return (
     <>
       <Preloader />
       <main className="min-h-screen">
       <nav className={`nav${navHidden ? " nav-hidden" : ""}`}>
-        <div className="nav-inner"><a className="brand" href="#top" aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
+        <div className="nav-inner"><a className="brand" href="#top" onClick={(event) => smoothNavigate(event, "#top")} aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="#programs" onClick={(event) => smoothNavigate(event, "#programs")}>Programs</a><a href="#method" onClick={(event) => smoothNavigate(event, "#method")}>Method</a><a href="#contact" onClick={(event) => smoothNavigate(event, "#contact")}>Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
       </nav>
 
       <section className="hero" id="top" ref={heroRef}>

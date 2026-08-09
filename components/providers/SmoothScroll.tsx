@@ -3,6 +3,12 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
+declare global {
+  interface Window {
+    __pascalxLenis?: Lenis;
+  }
+}
+
 export function SmoothScroll() {
   useEffect(() => {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -14,8 +20,12 @@ export function SmoothScroll() {
       smoothWheel: true,
       syncTouch: false,
     });
+    window.__pascalxLenis = lenis;
 
-    return () => lenis.destroy();
+    return () => {
+      delete window.__pascalxLenis;
+      lenis.destroy();
+    };
   }, []);
 
   return null;
