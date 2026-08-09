@@ -4,6 +4,7 @@ import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
 import { TextLoop } from "@/components/ui/TextLoop";
+import { Preloader } from "@/components/ui/Preloader";
 import { courses as featureCourses } from "@/features/courses/data";
 
 type Course = {
@@ -211,7 +212,9 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen">
+    <>
+      <Preloader />
+      <main className="min-h-screen">
       <nav className={`nav${navHidden ? " nav-hidden" : ""}`}>
         <div className="nav-inner"><a className="brand" href="#top" aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="#programs">Programs</a><a href="#method">Method</a><a href="#contact">Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
       </nav>
@@ -340,6 +343,7 @@ export default function Home() {
           {paymentState === "success" ? <div className="success"><span>✓</span><p className="eyebrow"><i /> Payment received</p><h2>Welcome to<br /><em>{selectedCourse.title}.</em></h2><p>Your tutor will contact you on WhatsApp with onboarding and your live Google Meet schedule.</p><button className="solid-button" onClick={closeModal}>Done <Arrow /></button></div> : <><div className="modal-course"><p className="eyebrow"><i /> {selectedCourse.code} · {selectedCourse.duration}</p><h2 id="course-title">{selectedCourse.title}</h2><p>{selectedCourse.overview}</p><div className="module-list">{selectedCourse.modules.map((module, index) => <span key={module}><b>0{index + 1}</b>{module}</span>)}</div></div><form className="checkout" onSubmit={beginCheckout}><p>Reserve your live seat</p><strong>{selectedCourse.price}</strong><label>Full name<input required placeholder="Your name" /></label><label>WhatsApp number<input required type="tel" placeholder="+91 00000 00000" /></label><label>Email address<input required type="email" placeholder="you@email.com" /></label><button className="solid-button" type="submit" disabled={paymentState === "processing"}>{paymentState === "processing" ? "Processing secure payment…" : <>Continue to payment <Arrow /></>}</button><small>Demo checkout — connect Razorpay or Stripe before accepting live payments.</small></form></>}
         </section>
       </div>}
-    </main>
+      </main>
+    </>
   );
 }
