@@ -269,7 +269,7 @@ export default function Home() {
 
       <section className="gradual-blur-section" data-reveal aria-label="PascalX field notes">
         <div className="gradual-blur-heading"><div><p className="eyebrow"><i /> Gradual signal</p><h2>Clarity is<br /><em>a practice.</em></h2></div><span>FIELD NOTES / 03</span></div>
-        <div className="gradual-blur-window" tabIndex={0} aria-label="Scrollable cybersecurity field notes">
+        <div className="gradual-blur-window" data-lenis-prevent tabIndex={0} aria-label="Scrollable cybersecurity field notes">
           <div className="gradual-blur-content">
             <article><span>01 / OBSERVE</span><h3>Slow down the first read.</h3><p>Good defenders notice what is missing before they chase what is loud.</p></article>
             <article><span>02 / QUESTION</span><h3>Make the useful question unavoidable.</h3><p>Every investigation gets sharper when the next decision is clear.</p></article>

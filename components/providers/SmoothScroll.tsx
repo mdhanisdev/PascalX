@@ -19,6 +19,7 @@ export function SmoothScroll() {
       lerp: 0.08,
       smoothWheel: true,
       syncTouch: false,
+      allowNestedScroll: true,
     });
     window.__pascalxLenis = lenis;
 
