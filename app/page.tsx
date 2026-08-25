@@ -1,23 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, MouseEvent, useCallback, useEffect, useRef, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { DirectionalTransition } from "@/components/ui/DirectionalTransition";
 import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
 import { TextLoop } from "@/components/ui/TextLoop";
 import { Preloader } from "@/components/ui/Preloader";
+import { ProgrammeCarousel } from "@/components/courses/ProgrammeCarousel";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { courses as featureCourses } from "@/features/courses/data";
 
-type Course = {
-  code: string;
-  title: string;
-  level: string;
-  duration: string;
-  price: string;
-  overview: string;
-  modules: string[];
-};
-
-const legacyCourses: Course[] = [
+/* const legacyCourses: Course[] = [
   {
     code: "PX/01",
     title: "Ethical Hacking Foundations",
@@ -45,130 +38,97 @@ const legacyCourses: Course[] = [
     overview: "Learn the daily operating rhythm of a security operations centre: alerts, triage, investigation, escalation, and incident thinking.",
     modules: ["SIEM fundamentals", "Alert triage", "Threat hunting", "Incident response playbooks"],
   },
-];
+]; */
 
 import { faqs } from "@/features/faq/data";
 
 const courses = featureCourses;
-void legacyCourses;
+const upcomingProgrammes = [
+  { code: "PX/04", title: "Cloud Security Essentials", detail: "Identity, cloud posture, and practical hardening workflows.", image: "/course-images/cloud-security.webp" },
+  { code: "PX/05", title: "Threat Intelligence Lab", detail: "Turn open-source signals into useful defensive decisions.", image: "/course-images/threat-landscape.png" },
+  { code: "PX/06", title: "Incident Response Practice", detail: "Contain, investigate, and communicate through realistic scenarios.", image: "/course-images/ethical-hacking.jpg" },
+];
 
 function Arrow() {
   return <span className="arrow" aria-hidden="true">↗</span>;
 }
 
 export default function Home() {
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [paymentState, setPaymentState] = useState<"form" | "processing" | "success">("form");
-  const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
-  const [authSubmitted, setAuthSubmitted] = useState(false);
-  const [authLoading, setAuthLoading] = useState(false);
   const [contactSent, setContactSent] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [navHidden, setNavHidden] = useState(false);
-  const [pageReady, setPageReady] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [skipPreloader] = useState(() => typeof window !== "undefined" && window.sessionStorage.getItem("pascalx-skip-preloader") === "true");
+  const [pageReady, setPageReady] = useState(skipPreloader);
   const handlePreloaderComplete = useCallback(() => setPageReady(true), []);
   const heroRef = useRef<HTMLElement>(null);
-  const scrollExpandRef = useRef<HTMLElement>(null);
-  const strandsCanvasRef = useRef<HTMLCanvasElement>(null);
   const lastScrollYRef = useRef(0);
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedCourse(null);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  useEffect(() => {
-    if (!authMode) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = previousOverflow; };
-  }, [authMode]);
-
-  useEffect(() => {
-    const section = scrollExpandRef.current;
-    if (!section) return;
-    let frame = 0;
-    const updateExpand = () => {
-      frame = 0;
-      const rect = section.getBoundingClientRect();
-      const travel = Math.max(section.offsetHeight - window.innerHeight, 1);
-      const progress = Math.min(Math.max(-rect.top / travel, 0), 1);
-      section.style.setProperty("--expand-progress", progress.toFixed(4));
-    };
-    const onScroll = () => { if (!frame) frame = window.requestAnimationFrame(updateExpand); };
-    updateExpand();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, []);
 
   useEffect(() => {
     lastScrollYRef.current = window.scrollY;
     const onScroll = () => {
       const current = window.scrollY;
       const delta = current - lastScrollYRef.current;
-      if (current < 20) setNavHidden(false);
-      else if (Math.abs(delta) > 4) setNavHidden(delta > 0);
+      if (!window.matchMedia("(max-width: 720px)").matches) {
+        setNavHidden(false);
+      } else if (current < 20) {
+        setNavHidden(false);
+      } else if (Math.abs(delta) > 6) {
+        setNavHidden(delta > 0);
+      }
       lastScrollYRef.current = current;
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useLayoutEffect(() => {
+    if (!skipPreloader) return;
+
+    const target = window.sessionStorage.getItem("pascalx-scroll-target") ?? window.location.hash.slice(1);
+    if (!target) return;
+
+    const section = document.getElementById(target);
+    if (!section) return;
+
+    window.sessionStorage.removeItem("pascalx-scroll-target");
+    const lenis = window.__pascalxLenis;
+    if (lenis) {
+      lenis.scrollTo(section, { offset: -80, immediate: true, force: true });
+      return;
+    }
+
+    window.scrollTo({ top: Math.max(section.getBoundingClientRect().top + window.scrollY - 80, 0), behavior: "instant" });
+  }, [skipPreloader]);
+
   useEffect(() => {
-    const canvas = strandsCanvasRef.current;
-    const context = canvas?.getContext("2d");
-    if (!canvas || !context) return;
-    let width = 0;
-    let height = 0;
-    let tick = 0;
-    let frame = 0;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const resize = () => {
-      const bounds = canvas.getBoundingClientRect();
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      width = bounds.width;
-      height = bounds.height;
-      canvas.width = width * ratio;
-      canvas.height = height * ratio;
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileNavOpen(false);
     };
-    const draw = () => {
-      context.clearRect(0, 0, width, height);
-      for (let strand = 0; strand < 20; strand += 1) {
-        const center = height * (0.16 + strand * 0.036);
-        context.beginPath();
-        for (let x = -20; x <= width + 20; x += 12) {
-          const wave = Math.sin(x * 0.008 + strand * 0.48 + tick * (0.7 + strand * 0.018)) * height * 0.1;
-          const ripple = Math.sin(x * 0.019 + strand * 0.7 + tick * 0.45) * height * 0.025;
-          const y = center + wave + ripple;
-          if (x === -20) context.moveTo(x, y); else context.lineTo(x, y);
-        }
-        context.strokeStyle = strand % 4 === 0 ? "rgba(216,255,66,.56)" : "rgba(131,169,255,.28)";
-        context.lineWidth = strand % 4 === 0 ? 1.2 : 0.7;
-        context.stroke();
-        const nodeX = width * (0.18 + ((strand * 0.17) % 0.68));
-        const nodeY = center + Math.sin(nodeX * 0.008 + strand * 0.48 + tick * (0.7 + strand * 0.018)) * height * 0.1;
-        context.fillStyle = strand % 4 === 0 ? "#d8ff42" : "#83a9ff";
-        context.beginPath();
-        context.arc(nodeX, nodeY, strand % 4 === 0 ? 2.5 : 1.5, 0, Math.PI * 2);
-        context.fill();
-      }
-    };
-    const animate = () => { tick += 0.016; draw(); frame = window.requestAnimationFrame(animate); };
-    resize();
-    draw();
-    if (!reduceMotion) frame = window.requestAnimationFrame(animate);
-    window.addEventListener("resize", resize);
-    return () => { window.removeEventListener("resize", resize); if (frame) window.cancelAnimationFrame(frame); };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
   }, []);
+
+  useEffect(() => {
+    window.sessionStorage.removeItem("pascalx-skip-preloader");
+
+    const target = window.sessionStorage.getItem("pascalx-scroll-target") ?? window.location.hash.slice(1);
+    if (!target || skipPreloader) return;
+
+    window.sessionStorage.removeItem("pascalx-scroll-target");
+    const section = document.getElementById(target);
+    if (!section) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const lenis = window.__pascalxLenis;
+      if (lenis) {
+        lenis.scrollTo(section, { offset: target === "top" ? 0 : -80, duration: 1.15 });
+        return;
+      }
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [skipPreloader]);
 
   useEffect(() => {
     const updateHero = () => {
@@ -202,33 +162,69 @@ export default function Home() {
     return () => observer.disconnect();
   }, []);
 
-  function beginCheckout(event: FormEvent<HTMLFormElement>) {
+  /* function submitEnquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setPaymentState("processing");
-    window.setTimeout(() => setPaymentState("success"), 1250);
+    if (!selectedCourse) return;
+
+    const formData = new FormData(event.currentTarget);
+    const learnerName = String(formData.get("name") ?? "");
+    const message = [
+      "*PASCALX | COURSE ENQUIRY*",
+      "",
+      "*Programme*",
+      `${selectedCourse.title} (${selectedCourse.code})`,
+      "",
+      "*Learner details*",
+      `Name: ${learnerName}`,
+      `WhatsApp: ${formData.get("whatsapp")}`,
+      `Email: ${formData.get("email")}`,
+      "",
+      "Hello, I am interested in this programme. Please share the next steps, including availability, onboarding information, and the learning schedule.",
+      "",
+      `Thank you,\n${learnerName}`,
+    ].join("\n");
+
+    window.open(`https://wa.me/918150983477?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    setEnquiryState("success");
   }
 
   function closeModal() {
     setSelectedCourse(null);
-    setPaymentState("form");
-  }
+    setEnquiryState("form");
+  } */
 
   function smoothNavigate(event: MouseEvent<HTMLAnchorElement>, target: string) {
     event.preventDefault();
+    setMobileNavOpen(false);
+    const section = document.getElementById(target.slice(1));
+    if (!section) return;
+
+    if (window.location.hash) {
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    }
     const lenis = window.__pascalxLenis;
     if (lenis) {
-      lenis.scrollTo(target, { offset: 0, duration: 1.15 });
+      lenis.scrollTo(section, { offset: -80, duration: 1.15 });
       return;
     }
-    document.querySelector(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+
+  const programsSection = (
+    <section className="programs" id="programs" data-reveal>
+      <div className="section-top" data-reveal-item><p className="eyebrow"><i /> Select your discipline</p></div>
+      <h2 data-reveal-item><ScrollRevealText words={["Find", "your", "attack", "surface."]} breakAfter={[1]} accentFrom={2} effect="sharpen" /></h2>
+      <div data-reveal-item><ProgrammeCarousel courses={courses} /></div>
+    </section>
+  );
 
   return (
     <>
-      <Preloader onComplete={handlePreloaderComplete} />
-      <main className={`min-h-screen page-transition${pageReady ? " is-ready" : ""}`}>
-      <nav className={`nav${navHidden ? " nav-hidden" : ""}`}>
-        <div className="nav-inner"><a className="brand" href="#top" onClick={(event) => smoothNavigate(event, "#top")} aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="#programs" onClick={(event) => smoothNavigate(event, "#programs")}>Programs</a><a href="#method" onClick={(event) => smoothNavigate(event, "#method")}>Method</a><a href="#contact" onClick={(event) => smoothNavigate(event, "#contact")}>Contact</a></div><div className="nav-right"><div className="nav-auth"><button className="nav-login" onClick={() => { setAuthMode("signin"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign in</button><button className="nav-signup" onClick={() => { setAuthMode("signup"); setAuthSubmitted(false); setAuthLoading(false); }}>Sign up <Arrow /></button></div></div></div>
+      {!skipPreloader && <Preloader onComplete={handlePreloaderComplete} />}
+      <DirectionalTransition><main className={`min-h-screen page-transition${pageReady ? " is-ready" : ""}`}>
+      <nav className={`nav${navHidden && !mobileNavOpen ? " nav-hidden" : ""}`}>
+        <div className="nav-inner"><a className="brand" href="/" onClick={(event) => smoothNavigate(event, "#top")} aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="/" onClick={(event) => smoothNavigate(event, "#method")}>Approach</a><a href="/" onClick={(event) => smoothNavigate(event, "#learning")}>Learning model</a><a href="/" onClick={(event) => smoothNavigate(event, "#upcoming")}>Upcoming</a><a href="/" onClick={(event) => smoothNavigate(event, "#contact")}>Contact</a></div><a className="nav-cta" href="/" onClick={(event) => smoothNavigate(event, "#programs")}>Explore programmes <Arrow /></a><button className={`mobile-nav-toggle${mobileNavOpen ? " is-open" : ""}`} type="button" aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileNavOpen} aria-controls="mobile-navigation" onClick={() => setMobileNavOpen((open) => !open)}><span /><span /><span /></button></div>
+        <div className={`mobile-nav-panel${mobileNavOpen ? " is-open" : ""}`} id="mobile-navigation"><a href="/" onClick={(event) => smoothNavigate(event, "#method")}>Approach</a><a href="/" onClick={(event) => smoothNavigate(event, "#learning")}>Learning model</a><a href="/" onClick={(event) => smoothNavigate(event, "#upcoming")}>Upcoming programmes</a><a href="/" onClick={(event) => smoothNavigate(event, "#contact")}>Contact PascalX</a><a className="mobile-nav-primary" href="/" onClick={(event) => smoothNavigate(event, "#programs")}>Explore programmes <Arrow /></a></div>
       </nav>
 
       <section className="hero" id="top" ref={heroRef}>
@@ -239,11 +235,11 @@ export default function Home() {
           <div className="scanlines" />
           <div className="hero-shade" />
           <div className="hero-copy">
-            <p className="eyebrow"><i /> Live cyber education · cohort 01</p>
-            <h1>Learn to think<br /><em><TextLoop items={["like the threat.", "through evidence.", "under pressure.", "one step ahead."]} /></em></h1>
+            <p className="eyebrow"><i /> Live cyber education · cohort</p>
+            <h1><span className="hero-title-leading">Learn to think</span><em><TextLoop items={["like the threat.", "through evidence.", "under pressure.", "one step ahead."]} /></em></h1>
             <p className="hero-description">Live, practical cybersecurity training for people who want more than passive lessons.</p>
           </div>
-          <div className="hero-bottom"><span>SCROLL TO ENTER</span><span className="scroll-mark">↓</span><span>01—04</span></div>
+          <div className="hero-bottom"><span className="scroll-mark">↓</span></div>
         </div>
       </section>
 
@@ -251,7 +247,7 @@ export default function Home() {
         <p className="eyebrow dark"><i /> The PascalX method</p>
         <div className="manifesto-grid" data-reveal-item>
           <h2><ScrollRevealText words={["Security", "is", "not", "a", "chapter.", "It", "is", "a", "way", "of", "seeing."]} breakAfter={[4]} accentFrom={8} /></h2>
-          <div className="manifesto-copy"><p>We turn curious learners into methodical defenders through guided labs, live instruction, and the habits real security work requires.</p><a href="#programs" className="text-link">See the programmes <Arrow /></a></div>
+          <div className="manifesto-copy"><p>We turn curious learners into methodical defenders through guided labs, live instruction, and the habits real security work requires.</p><a href="#programs" className="text-link" onClick={(event) => smoothNavigate(event, "#programs")}>See the programmes <Arrow /></a></div>
         </div>
         <div className="signal-row" data-reveal-item><span>LIVE INSTRUCTION</span><span>REAL-WORLD LABS</span><span>SMALL COHORTS</span><span>MENTOR DELIVERY</span></div>
       </section>
@@ -261,80 +257,57 @@ export default function Home() {
         <div className="video-break-copy"><span>THE LAB IS OPEN</span><strong>Observe. Test. Defend.</strong></div>
       </section>
 
-      <section className="scroll-expand-section" ref={scrollExpandRef} aria-label="PascalX learning environment">
-        <div className="scroll-expand-sticky">
-          <div className="scroll-expand-media"><Image src="/media/cybersecurity-tips-1200-627.webp" alt="Cybersecurity learning tips" fill sizes="(max-width: 720px) 88vw, 76vw" priority /><div className="scroll-expand-scrim" /><div className="scroll-expand-frame" /></div>
-          <div className="scroll-expand-copy"><span>FIELD NOTE / 02</span><strong>Go deeper<br /><em>on purpose.</em></strong><p>Every concept becomes a scenario, a decision, and a piece of defensible work.</p></div>
-          <div className="scroll-expand-meta"><span>SCROLL TO EXPAND</span><span>PX / 02—04</span></div>
+      {programsSection}
+
+      <section className="training-bridge" data-reveal aria-labelledby="training-bridge-heading">
+        <p className="eyebrow" data-reveal-item><i /> Beyond the lesson</p>
+        <div className="training-bridge-grid" data-reveal-item>
+          <h2 id="training-bridge-heading">Learn the method.<br /><em>Make it yours.</em></h2>
+          <div className="training-bridge-copy"><p>Good security work is a sequence of calm decisions. Each programme gives you a repeatable way to investigate a problem, validate what matters, and explain the next action clearly.</p><p className="training-bridge-note">You leave with more than notes: you leave with a workflow you can use again.</p></div>
         </div>
+        <ol className="practice-path" data-reveal-item aria-label="The PascalX practice loop">
+          <li><span className="practice-step">01 / RECOGNISE</span><h3>Read the surface.</h3><p>Break down a target, alert, or system into the signals worth investigating. Learn to separate useful evidence from background noise.</p></li>
+          <li><span className="practice-step">02 / TEST</span><h3>Follow the evidence.</h3><p>Use guided labs to form a hypothesis, test it safely, and document each decision so someone else can reproduce your work.</p></li>
+          <li><span className="practice-step">03 / REPORT</span><h3>Make the finding useful.</h3><p>Turn technical observations into a clear handoff: what happened, why it matters, and what should happen next.</p></li>
+        </ol>
+        <div className="training-bridge-status" data-reveal-item><span>THE PRACTICE LOOP</span><i aria-hidden="true" /><span>OBSERVE</span><span>VALIDATE</span><span>COMMUNICATE</span></div>
       </section>
 
-      <section className="gradual-blur-section" data-reveal aria-label="PascalX field notes">
-        <div className="gradual-blur-heading"><div><p className="eyebrow"><i /> Gradual signal</p><h2>Clarity is<br /><em>a practice.</em></h2></div><span>FIELD NOTES / 03</span></div>
-        <div className="gradual-blur-window" data-lenis-prevent tabIndex={0} aria-label="Scrollable cybersecurity field notes">
-          <div className="gradual-blur-content">
-            <article><span>01 / OBSERVE</span><h3>Slow down the first read.</h3><p>Good defenders notice what is missing before they chase what is loud.</p></article>
-            <article><span>02 / QUESTION</span><h3>Make the useful question unavoidable.</h3><p>Every investigation gets sharper when the next decision is clear.</p></article>
-            <article><span>03 / PROVE</span><h3>Leave a trail someone else can trust.</h3><p>Notes, evidence, and a calm handoff turn a technical win into durable work.</p></article>
-            <article><span>04 / REPEAT</span><h3>Build the habit, not the highlight.</h3><p>Practice is where intuition becomes a dependable operating rhythm.</p></article>
-          </div>
-          <div className="gradual-blur-mask" aria-hidden="true"><i /><i /><i /><i /><i /></div>
-        </div>
-      </section>
-
-      <section className="strands-section" data-reveal aria-label="Cybersecurity signal strands">
-        <canvas ref={strandsCanvasRef} aria-hidden="true" />
-        <div className="strands-overlay" />
-        <div className="strands-copy"><p className="eyebrow"><i /> Signal / network / response</p><h2>See the<br /><em>connections.</em></h2><p>Security work is rarely one alert. It is the pattern between signals, decisions, and people.</p></div>
-        <div className="strands-meta"><span>LIVE SIGNAL FIELD</span><span>PX / 04—04</span></div>
-      </section>
-
-      <section className="field-notes" data-reveal>
-        <div className="field-heading" data-reveal-item><div><p className="eyebrow"><i /> Intelligence, applied</p><span className="field-caption">A LIVE LEARNING CONTROL ROOM</span></div><div className="field-index">FIELD NOTE 001<br /><b>THREE WAYS TO TRAIN</b></div></div>
+      <section className="field-notes" id="learning" data-reveal>
+        <div className="field-heading" data-reveal-item><div><p className="eyebrow"><i /> Intelligence, applied</p><span className="field-caption">A LIVE LEARNING CONTROL ROOM</span></div><div className="field-index">FIELD NOTE<br /><b>THREE WAYS TO TRAIN</b></div></div>
         <div className="field-layout" data-reveal-item>
           <aside className="field-brief"><div className="brief-number">03</div><p className="brief-kicker">WAYS OF WORKING</p><p>Learn through the same habits that make a calm defender useful: observe closely, ask better questions, and leave evidence behind.</p><div className="brief-rule"><span>COHORT SIGNAL</span><b>ON / 24—7</b></div><div className="brief-rail" aria-hidden="true"><i /><i /><i /><i /><i /></div></aside>
           <div className="field-board">
-            <article className="note-row live-card"><div className="note-row-index">01</div><div className="note-row-copy"><div className="note-top"><span>LIVE / ACTIVE</span><span>GUIDED LABS</span></div><h3>Live practice</h3><p>See how a tutor approaches a problem, then attempt it in a safe lab of your own.</p></div><span className="note-row-arrow">↗</span></article>
-            <article className="note-row cohort-card"><div className="note-row-index">02</div><div className="note-row-copy"><div className="note-top"><span>DIRECT / ACCESS</span><span>DIRECT ACCESS</span></div><h3>Small cohorts</h3><p>Ask the question. Share your screen. Get an answer while the learning is still happening.</p></div><span className="note-row-arrow">↗</span></article>
-            <article className="note-row work-card"><div className="note-row-index">03</div><div className="note-row-copy"><div className="note-top"><span>BUILD / PROVE</span><span>PROOF OF PRACTICE</span></div><h3>Defensible work</h3><p>Build a portfolio of reports, notes, and workflows that show how you think under pressure.</p></div><span className="note-row-arrow">↗</span></article>
+            <article className="note-row live-card"><div className="note-row-index">01</div><div className="note-row-copy"><div className="note-top"><span>LIVE / ACTIVE</span><span>GUIDED LABS</span></div><h3>Live practice</h3><p>See how a tutor approaches a problem, then attempt it in a safe lab of your own.</p></div></article>
+            <article className="note-row cohort-card"><div className="note-row-index">02</div><div className="note-row-copy"><div className="note-top"><span>DIRECT / ACCESS</span><span>DIRECT ACCESS</span></div><h3>Small cohorts</h3><p>Ask the question. Share your screen. Get an answer while the learning is still happening.</p></div></article>
+            <article className="note-row work-card"><div className="note-row-index">03</div><div className="note-row-copy"><div className="note-top"><span>BUILD / PROVE</span><span>PROOF OF PRACTICE</span></div><h3>Defensible work</h3><p>Build a portfolio of reports, notes, and workflows that show how you think under pressure.</p></div></article>
           </div>
-        </div>
-      </section>
-
-      <section className="programs" id="programs" data-reveal>
-        <div className="section-top" data-reveal-item><p className="eyebrow"><i /> Select your discipline</p><span>03 PRACTICAL PROGRAMS</span></div>
-        <h2 data-reveal-item><ScrollRevealText words={["Find", "your", "attack", "surface."]} breakAfter={[1]} accentFrom={2} effect="glide" /></h2>
-        <div className="reflective-card" data-reveal-item tabIndex={0} onMouseMove={(event) => { const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--reflect-x", `${((event.clientX - rect.left) / rect.width) * 100}%`); event.currentTarget.style.setProperty("--reflect-y", `${((event.clientY - rect.top) / rect.height) * 100}%`); }} onMouseLeave={(event) => { event.currentTarget.style.setProperty("--reflect-x", "50%"); event.currentTarget.style.setProperty("--reflect-y", "50%"); }}>
-          <div className="reflective-card-glare" aria-hidden="true" />
-          <div className="reflective-card-top"><span>FEATURED LAB / PX—01</span><span>LIVE / 08 WEEKS</span></div>
-          <h3>Ethical Hacking<br /><em>Foundations.</em></h3>
-          <p>Build the attacker mindset safely through reconnaissance, web security, Linux, networking, and useful vulnerability reports.</p>
-          <div className="reflective-card-bottom"><span>BEGINNER → INTERMEDIATE</span><button type="button" onClick={() => { setPaymentState("form"); setSelectedCourse(courses[0]); }}>View programme <Arrow /></button></div>
-        </div>
-        <div className="course-list" data-reveal-item>
-          {courses.map((course, index) => (
-            <button className="course" key={course.code} onClick={() => { setPaymentState("form"); setSelectedCourse(course); }}>
-              <span className="course-index">0{index + 1}</span>
-              <span className="course-title"><small>{course.code}</small>{course.title}</span>
-              <span className="course-meta">{course.level}<br />{course.duration}</span>
-              <span className="course-price">{course.price}<Arrow /></span>
-            </button>
-          ))}
         </div>
       </section>
 
       <section className="protocol" data-reveal>
-        <p className="eyebrow"><i /> After enrolment</p>
-        <div className="protocol-grid" data-reveal-item><h2><ScrollRevealText words={["Your", "seat", "is", "personally", "confirmed."]} breakAfter={[2]} accentFrom={3} effect="sharpen" /></h2><p>Once your payment is successful, your tutor contacts you directly on WhatsApp with onboarding details and your daily Google Meet link. No portal maze. No automated handoff.</p></div>
-        <div className="steps" data-reveal-item><div><b>01</b><h3>Choose a programme</h3><p>Open any course for its curriculum and seat details.</p></div><div><b>02</b><h3>Secure your seat</h3><p>Complete payment through the course checkout.</p></div><div><b>03</b><h3>Meet your tutor</h3><p>Receive your Google Meet schedule directly on WhatsApp.</p></div></div>
+        <p className="eyebrow"><i /> After your enquiry</p>
+        <div className="protocol-grid" data-reveal-item><h2><ScrollRevealText words={["Your", "next", "step", "is", "personal."]} breakAfter={[2]} accentFrom={3} effect="sharpen" /></h2><p>Send your course enquiry on WhatsApp, and your tutor will follow up directly with availability, onboarding details, and your Google Meet schedule. No portal maze. No automated handoff.</p></div>
+        <div className="steps" data-reveal-item><div><b>01</b><h3>Choose a programme</h3><p>Open either course to review its curriculum and fee.</p></div><div><b>02</b><h3>Send your enquiry</h3><p>Share your name, WhatsApp number, and email in the prefilled WhatsApp message.</p></div><div><b>03</b><h3>Hear from your tutor</h3><p>Receive the next steps and your schedule directly on WhatsApp.</p></div></div>
       </section>
 
-      <section className="faq-section" data-reveal aria-labelledby="faq-heading">
+      <section className="upcoming-programmes" id="upcoming" data-reveal aria-labelledby="upcoming-programmes-heading">
+        <div className="upcoming-programmes-heading" data-reveal-item><p className="eyebrow"><i /> On the horizon</p><h2 id="upcoming-programmes-heading">Upcoming<br /><em>programmes.</em></h2></div>
+        <div className="upcoming-programmes-grid" data-reveal-item>
+          {upcomingProgrammes.map((programme) => <article className="upcoming-programme-card" key={programme.code}>
+            <div className="upcoming-programme-image"><Image src={programme.image} alt="" fill sizes="(max-width: 720px) 88vw, 30vw" /></div>
+            <div className="upcoming-programme-copy"><span>{programme.code} / UPCOMING</span><h3>{programme.title}</h3><p>{programme.detail}</p><b>Coming soon</b></div>
+          </article>)}
+        </div>
+      </section>
+
+      <section className="faq-section" id="faq" data-reveal aria-labelledby="faq-heading">
         <div className="faq-heading"><p className="eyebrow"><i /> Common questions</p><h2 id="faq-heading">Know before<br /><em>you begin.</em></h2></div>
         <div className="faq-list">{faqs.map(([question, answer], index) => <div className={`faq-item${openFaq === index ? " is-open" : ""}`} key={question}><button type="button" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{question}</strong><i aria-hidden="true">+</i></button><div className="faq-answer"><p>{answer}</p></div></div>)}</div>
       </section>
 
-      <footer id="contact">
+      <SiteFooter />
+      <footer id="legacy-contact" hidden>
         <div className="footer-orbit" aria-hidden="true"><span /><span /><span /></div>
         <div className="footer-top"><p className="eyebrow"><i /> NEXT COHORT · LIVE ONLINE</p><span className="footer-signal">● SEATS OPEN</span></div>
         <div className="footer-cta"><h2>Make your<br /><em>next move.</em></h2><div><p>Choose a programme and reserve your live learning seat. Your tutor confirms the next steps personally on WhatsApp.</p><a href="#programs" className="footer-button">Explore programmes <Arrow /></a></div></div>
@@ -342,20 +315,13 @@ export default function Home() {
         <div className="footer-bottom"><div className="footer-brand">PASCAL<span>X</span></div><div className="footer-links"><a href="#programs">Programmes</a><a href="#method">Learning method</a><a href="#top">Back to top ↑</a></div><div className="footer-meta">© 2026 PASCALX<br />CYBERSECURITY LEARNING<br /><br />LEARN WITH PERMISSION.<br />PRACTISE WITH PURPOSE.</div></div>
       </footer>
 
-      {authMode && <div className="modal-backdrop" role="presentation" onMouseDown={() => setAuthMode(null)}>
-        <section className={`auth-modal auth-modal-${authMode}`} role="dialog" aria-modal="true" aria-labelledby="auth-title" onMouseDown={(event) => event.stopPropagation()}>
-          <button className="close" onClick={() => setAuthMode(null)} aria-label="Close authentication dialog">×</button>
-          {authSubmitted ? <div className="auth-complete"><div className="auth-identity-mark"><span>✓</span><i>ACCESS REQUESTED</i></div><p className="eyebrow"><i /> Demo account ready</p><h2>You&apos;re on<br /><em>the list.</em></h2><p>This is a frontend preview. Connect Auth.js later to make account creation and sign-in live.</p><button className="solid-button" onClick={() => setAuthMode(null)}>Continue exploring <Arrow /></button></div> : <><p className="eyebrow"><i /> PascalX learner access</p><h2 id="auth-title">{authMode === "signin" ? <>Welcome<br /><em>back.</em></> : <>Start your<br /><em>practice.</em></>}</h2><form className="auth-form" onSubmit={(event) => { event.preventDefault(); setAuthLoading(true); window.setTimeout(() => { setAuthLoading(false); setAuthSubmitted(true); }, 1100); }}><label>Email address<input required type="email" placeholder="you@email.com" /></label>{authMode === "signup" && <label>Your name<input required placeholder="Full name" /></label>}<label>Password<input required type="password" placeholder="••••••••" /></label><button className="solid-button" type="submit" disabled={authLoading}>{authLoading ? <><span className="auth-spinner" /> Securing your access…</> : <>{authMode === "signin" ? "Sign in" : "Create account"} <Arrow /></>}</button></form><p className="auth-switch">{authMode === "signin" ? "New to PascalX?" : "Already learning with us?"} <button onClick={() => { setAuthMode(authMode === "signin" ? "signup" : "signin"); setAuthSubmitted(false); setAuthLoading(false); }}>{authMode === "signin" ? "Create an account" : "Sign in"}</button></p></>}
-        </section>
-      </div>}
-
-      {selectedCourse && <div className="modal-backdrop" role="presentation" onMouseDown={closeModal}>
+      {/*
         <section className="modal" role="dialog" aria-modal="true" aria-labelledby="course-title" onMouseDown={(event) => event.stopPropagation()}>
           <button className="close" onClick={closeModal} aria-label="Close course details">×</button>
-          {paymentState === "success" ? <div className="success"><span>✓</span><p className="eyebrow"><i /> Payment received</p><h2>Welcome to<br /><em>{selectedCourse.title}.</em></h2><p>Your tutor will contact you on WhatsApp with onboarding and your live Google Meet schedule.</p><button className="solid-button" onClick={closeModal}>Done <Arrow /></button></div> : <><div className="modal-course"><p className="eyebrow"><i /> {selectedCourse.code} · {selectedCourse.duration}</p><h2 id="course-title">{selectedCourse.title}</h2><p>{selectedCourse.overview}</p><div className="module-list">{selectedCourse.modules.map((module, index) => <span key={module}><b>0{index + 1}</b>{module}</span>)}</div></div><form className="checkout" onSubmit={beginCheckout}><p>Reserve your live seat</p><strong>{selectedCourse.price}</strong><label>Full name<input required placeholder="Your name" /></label><label>WhatsApp number<input required type="tel" placeholder="+91 00000 00000" /></label><label>Email address<input required type="email" placeholder="you@email.com" /></label><button className="solid-button" type="submit" disabled={paymentState === "processing"}>{paymentState === "processing" ? "Processing secure payment…" : <>Continue to payment <Arrow /></>}</button><small>Demo checkout — connect Razorpay or Stripe before accepting live payments.</small></form></>}
+          {enquiryState === "success" ? <div className="success"><span>✓</span><p className="eyebrow"><i /> Enquiry ready</p><h2>Your message is<br /><em>ready to send.</em></h2><p>A prefilled WhatsApp message has opened. Send it to share your details with the tutor, who will contact you with the next steps.</p><button className="solid-button" onClick={closeModal}>Continue exploring <Arrow /></button></div> : <><div className="modal-course"><p className="eyebrow"><i /> {selectedCourse.code} · {selectedCourse.duration}</p><h2 id="course-title">{selectedCourse.title}</h2><p>{selectedCourse.overview}</p><div className="module-list">{selectedCourse.modules.map((module, index) => <span key={module}><b>0{index + 1}</b>{module}</span>)}</div></div><form className="checkout" onSubmit={submitEnquiry}><p>Enquire about this programme</p><strong>{selectedCourse.price}</strong><label>Full name<input required name="name" placeholder="Your name" /></label><label>WhatsApp number<input required name="whatsapp" type="tel" placeholder="+91 00000 00000" /></label><label>Email address<input required name="email" type="email" placeholder="you@email.com" /></label><button className="solid-button" type="submit">Continue on WhatsApp <Arrow /></button><small>No payment is taken here. Your tutor will confirm the next steps on WhatsApp.</small></form></>}
         </section>
-      </div>}
-      </main>
+      */}
+      </main></DirectionalTransition>
     </>
   );
 }
