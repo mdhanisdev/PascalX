@@ -34,14 +34,14 @@ export function Preloader({ onComplete }: { onComplete?: () => void }) {
   if (!isVisible) return null;
 
   return (
-    <div className={`site-preloader${isLeaving ? " is-leaving" : ""}`} role="status" aria-label={`Loading PascalX ${progress}%`}>
+    <div className={`site-preloader${isLeaving ? " is-leaving" : ""}`} role="status" aria-label={`Loading PasconX ${progress}%`}>
       <div className="site-preloader-grid" aria-hidden="true" />
       <div className="site-preloader-mark" aria-hidden="true">
         <span />
         <span />
         <span />
       </div>
-      <div className="site-preloader-wordmark">PASCALX</div>
+      <div className="site-preloader-wordmark">PASCONX</div>
       <div className="site-preloader-progress"><strong>{String(progress).padStart(3, "0")}%</strong><span><i style={{ width: `${progress}%` }} /></span></div>
       <div className="site-preloader-status">Establishing secure learning environment</div>
       <div className="site-preloader-corners" aria-hidden="true"><i /><i /><i /><i /></div>

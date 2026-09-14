@@ -1,7 +1,7 @@
 export const faqs = [
-  ["Are the classes live or recorded?", "PascalX programmes are live and tutor-led. You learn through guided practice, ask questions in the moment, and work through real security scenarios with your cohort."],
-  ["Do I need prior cybersecurity experience?", "No. Each programme lists its starting level clearly, and the curriculum moves from foundations into practical workflows at a steady pace."],
-  ["How do the labs work?", "You receive safe, guided environments to practise reconnaissance, testing, investigation, and reporting without touching systems you do not own."],
-  ["What happens after I submit an enquiry?", "A tutor contacts you on WhatsApp with availability, onboarding details, class timing, and the Google Meet link."],
-  ["Can I ask questions before choosing a programme?", "Yes. Send us a WhatsApp enquiry and tell us what you want to learn. We can point you toward the most suitable programme."],
+  ["Who is eligible to join the Certified SOC Analyst course?", "Freshers, college graduates (B.Tech/BCA/B.Sc/MCA), IT support professionals, and network administrators looking to transition into cybersecurity can enroll. No prior cybersecurity experience is required. Basic familiarity with computer systems and networking is helpful, but everything is taught from the ground up."],
+  ["What tools and SIEM platforms will I work on?", "In the SOC program, you'll gain hands-on experience with Splunk, Wazuh/ELK Stack, Wireshark, Sysmon, and Nmap. In the VAPT track, you'll work extensively with Burp Suite, OWASP ZAP, and Metasploit."],
+  ["What certificate will I receive after completing the program?", "You'll receive the official Pasconix Course Completion & Practical Credential upon passing the capstone breach investigation and submitting your technical reports."],
+  ["Does Pasconix help with placements and job readiness?", "Yes. Every cohort concludes with dedicated career workshops, cybersecurity resume tailoring, LinkedIn optimization, mock technical interviews, and guidance on entry-level L1 SOC and Junior Security Analyst hiring pipelines."],
+  ["Are classes live or pre-recorded?", "All core sessions are 100% live and instructor-led by active cybersecurity practitioners. Recorded sessions and lab walkthroughs are provided on the student portal for revision."],
 ] as const;

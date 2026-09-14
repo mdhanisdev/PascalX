@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PasconX
 
-## Getting Started
+Public marketing website for PasconX live cybersecurity training programmes.
 
-First, run the development server:
+## Technology
+
+- Next.js 16 (App Router)
+- React 19 and TypeScript
+- Lenis smooth scrolling
+- Next.js image optimisation and generated SEO routes
+
+## Local development
+
+Requirements: Node.js 20.9 or later and npm.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Quality checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run these before every release:
 
-## Learn More
+```bash
+npm run lint
+npm run build
+npm audit --omit=dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Production deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The canonical production URL is `https://www.pasconx.com`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Create the hosting project in the client-owned hosting account.
+2. Connect the client-owned GitHub repository.
+3. Configure `www.pasconx.com` as the production domain and redirect the apex domain to the chosen canonical URL.
+4. Confirm HTTPS is active before launch.
+5. Deploy from the protected production branch after all quality checks pass.
+6. Verify `/robots.txt`, `/sitemap.xml`, both programme pages, WhatsApp enquiry links, phone/email links, and the 404 page on the live domain.
+7. Submit `https://www.pasconx.com/sitemap.xml` in the client-owned Google Search Console property.
 
-## Deploy on Vercel
+No environment variables are currently required. If any are added later, document safe placeholder names in `.env.example`; never commit real values.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Content updates
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Course content is maintained in `features/courses/data.ts`.
+- FAQ content is maintained in `features/faq/data.ts`.
+- Public images, brochures, and video assets are in `public/`.
+- Before publishing an asset, confirm the client owns or licenses it for web use.
+
+## Security and SEO
+
+The app includes baseline response headers, robots rules, an XML sitemap, canonical metadata, course metadata, a generated social sharing image, and branded not-found/error fallbacks.
+
+Before enabling analytics or error monitoring, create those services in the client-owned account and document the required environment variables. Do not place tracking IDs, API keys, or service credentials directly in source files.
+
+## Handover
+
+Use [`PRODUCTION_HANDOVER_TODO.md`](./PRODUCTION_HANDOVER_TODO.md) as the live release and client-handover record. It tracks QA, deployment, source-code transfer, credential handover, client sign-off, and the warranty period.

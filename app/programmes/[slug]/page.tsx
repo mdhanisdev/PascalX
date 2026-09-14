@@ -1,16 +1,29 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CourseEnquiry } from "@/components/courses/CourseEnquiry";
 import { SiteFooter } from "@/components/layout/SiteFooter";
-import { CourseMobileMenu } from "@/components/layout/CourseMobileMenu";
 import { CourseBackLink } from "@/components/layout/CourseBackLink";
+import { CourseScrollReset } from "@/components/providers/CourseScrollReset";
 import { DirectionalTransition } from "@/components/ui/DirectionalTransition";
 import { courses, getCourseBySlug } from "@/features/courses/data";
-import { ViewTransition } from "react";
 
 export function generateStaticParams() {
   return courses.map(({ slug }) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const course = getCourseBySlug(slug);
+  if (!course) return {};
+
+  return {
+    title: course.title,
+    description: course.overview,
+    alternates: { canonical: `/programmes/${course.slug}` },
+    openGraph: { title: course.title, description: course.overview, url: `/programmes/${course.slug}` },
+  };
 }
 
 export default async function ProgrammePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -21,11 +34,12 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
   return (
     <DirectionalTransition>
     <main className="course-page" id="course-top">
-      <nav className="course-nav"><Link href="/" className="brand" transitionTypes={["nav-back"]}>PASCAL<span>X</span></Link><CourseBackLink /><CourseMobileMenu /></nav>
+      <CourseScrollReset />
+       <nav className="course-nav"><Link href="/" className="brand" transitionTypes={["nav-back"]}>PASCON<span>X</span></Link><CourseBackLink /></nav>
       <section className="course-hero">
-        <div className="course-hero-media"><ViewTransition name={`programme-image-${course.slug}`} share="morph" default="none"><Image src={course.image} alt="" fill priority sizes="100vw" /></ViewTransition></div>
+        <div className="course-hero-media"><Image src={course.image} alt="" fill priority sizes="100vw" /></div>
         <div className="course-hero-scrim" />
-        <div className="course-hero-content"><h1>{course.title}</h1><p>{course.overview}</p></div>
+        <div className="course-hero-content"><h1>{course.headline}</h1><p>{course.overview}</p></div>
       </section>
       <section className="course-detail-grid">
         <div className="course-detail-content">

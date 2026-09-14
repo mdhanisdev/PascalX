@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import type { Course } from "@/features/courses/data";
 import { WhatsAppIcon } from "@/components/ui/WhatsAppIcon";
 
-const tutorWhatsAppNumber = "918150983477";
+const tutorWhatsAppNumber = "9441276060";
 
 export function CourseEnquiry({ course }: { course: Course }) {
   const [sent, setSent] = useState(false);
@@ -14,22 +14,24 @@ export function CourseEnquiry({ course }: { course: Course }) {
     const formData = new FormData(event.currentTarget);
     const learnerName = String(formData.get("name") ?? "");
     const message = [
-      "*PASCALX | COURSE ENQUIRY*",
+      "*PASCONX | COURSE ENQUIRY*",
       "",
       "*Programme*",
-      `${course.title} (${course.code})`,
+      course.title,
       "",
-      "*Learner details*",
+      "*Learner Details*",
       `Name: ${learnerName}`,
       `WhatsApp: ${formData.get("whatsapp")}`,
       `Email: ${formData.get("email")}`,
       "",
-      "Hello, I am interested in this programme. Please share the next steps, including availability, onboarding information, and the learning schedule.",
+      "Hello PasconX Team,",
       "",
-      `Thank you,\n${learnerName}`,
+      `I would like to enquire about the ${course.title} programme. Could you please share the upcoming cohort availability, learning schedule, and enrolment process?`,
+      "",
+      `Kind regards,\n${learnerName}`,
     ].join("\n");
 
-    window.open(`https://wa.me/${tutorWhatsAppNumber}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/91${tutorWhatsAppNumber}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
     setSent(true);
   }
 

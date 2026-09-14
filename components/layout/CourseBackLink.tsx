@@ -11,6 +11,8 @@ export function CourseBackLink() {
       aria-label="Back to all programmes"
       transitionTypes={["nav-back"]}
       onClick={() => {
+        // Do not let a moving Lenis frame carry into the route transition.
+        window.__pascalxLenis?.stop();
         window.sessionStorage.setItem("pascalx-scroll-target", "programs");
         window.sessionStorage.setItem("pascalx-skip-preloader", "true");
       }}

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { MouseEvent, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { DirectionalTransition } from "@/components/ui/DirectionalTransition";
 import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
@@ -95,6 +96,7 @@ export default function Home() {
     const lenis = window.__pascalxLenis;
     if (lenis) {
       lenis.scrollTo(section, { offset: -80, immediate: true, force: true });
+      lenis.start();
       return;
     }
 
@@ -108,6 +110,19 @@ export default function Home() {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, []);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.__pascalxLenis?.stop();
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.__pascalxLenis?.start();
+    };
+  }, [mobileNavOpen]);
 
   useEffect(() => {
     window.sessionStorage.removeItem("pascalx-skip-preloader");
@@ -184,7 +199,7 @@ export default function Home() {
       `Thank you,\n${learnerName}`,
     ].join("\n");
 
-    window.open(`https://wa.me/918150983477?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/919441276060?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
     setEnquiryState("success");
   }
 
@@ -195,19 +210,28 @@ export default function Home() {
 
   function smoothNavigate(event: MouseEvent<HTMLAnchorElement>, target: string) {
     event.preventDefault();
+    const shouldResumeScroll = mobileNavOpen;
     setMobileNavOpen(false);
-    const section = document.getElementById(target.slice(1));
-    if (!section) return;
+    const scrollToSection = () => {
+      const section = document.getElementById(target.slice(1));
+      if (!section) return;
 
-    if (window.location.hash) {
-      window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
-    }
-    const lenis = window.__pascalxLenis;
-    if (lenis) {
-      lenis.scrollTo(section, { offset: -80, duration: 1.15 });
+      if (window.location.hash) {
+        window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+      }
+      const lenis = window.__pascalxLenis;
+      if (lenis) {
+        lenis.scrollTo(section, { offset: -80, duration: 1.15 });
+        return;
+      }
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+
+    if (shouldResumeScroll) {
+      window.requestAnimationFrame(() => window.requestAnimationFrame(scrollToSection));
       return;
     }
-    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    scrollToSection();
   }
 
   const programsSection = (
@@ -223,8 +247,9 @@ export default function Home() {
       {!skipPreloader && <Preloader onComplete={handlePreloaderComplete} />}
       <DirectionalTransition><main className={`min-h-screen page-transition${pageReady ? " is-ready" : ""}`}>
       <nav className={`nav${navHidden && !mobileNavOpen ? " nav-hidden" : ""}`}>
-        <div className="nav-inner"><a className="brand" href="/" onClick={(event) => smoothNavigate(event, "#top")} aria-label="PascalX home">PASCAL<span>X</span></a><div className="nav-links"><a href="/" onClick={(event) => smoothNavigate(event, "#method")}>Approach</a><a href="/" onClick={(event) => smoothNavigate(event, "#learning")}>Learning model</a><a href="/" onClick={(event) => smoothNavigate(event, "#upcoming")}>Upcoming</a><a href="/" onClick={(event) => smoothNavigate(event, "#contact")}>Contact</a></div><a className="nav-cta" href="/" onClick={(event) => smoothNavigate(event, "#programs")}>Explore programmes <Arrow /></a><button className={`mobile-nav-toggle${mobileNavOpen ? " is-open" : ""}`} type="button" aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileNavOpen} aria-controls="mobile-navigation" onClick={() => setMobileNavOpen((open) => !open)}><span /><span /><span /></button></div>
-        <div className={`mobile-nav-panel${mobileNavOpen ? " is-open" : ""}`} id="mobile-navigation"><a href="/" onClick={(event) => smoothNavigate(event, "#method")}>Approach</a><a href="/" onClick={(event) => smoothNavigate(event, "#learning")}>Learning model</a><a href="/" onClick={(event) => smoothNavigate(event, "#upcoming")}>Upcoming programmes</a><a href="/" onClick={(event) => smoothNavigate(event, "#contact")}>Contact PascalX</a><a className="mobile-nav-primary" href="/" onClick={(event) => smoothNavigate(event, "#programs")}>Explore programmes <Arrow /></a></div>
+        <div className="nav-inner"><Link className="brand" href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#top")} aria-label="PasconX home">PASCON<span>X</span></Link><div className="nav-links"><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#method")}>Approach</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#learning")}>Learning model</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#upcoming")}>Upcoming</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#contact")}>Contact</Link></div><Link className="nav-cta" href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#programs")}>Explore programmes <Arrow /></Link><button className={`mobile-nav-toggle${mobileNavOpen ? " is-open" : ""}`} type="button" aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileNavOpen} aria-controls="mobile-navigation" onClick={() => setMobileNavOpen((open) => !open)}><span /><span /><span /></button></div>
+        {mobileNavOpen && <button className="mobile-nav-backdrop" type="button" aria-label="Close navigation menu" onClick={() => setMobileNavOpen(false)} />}
+        <div className={`mobile-nav-panel${mobileNavOpen ? " is-open" : ""}`} id="mobile-navigation"><p className="mobile-nav-label">Navigate</p><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#method")}>Approach</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#learning")}>Learning model</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#upcoming")}>Upcoming programmes</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#contact")}>Contact PasconX</Link><Link className="mobile-nav-primary" href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#programs")}>Explore programmes <Arrow /></Link></div>
       </nav>
 
       <section className="hero" id="top" ref={heroRef}>
@@ -244,7 +269,7 @@ export default function Home() {
       </section>
 
       <section className="manifesto" id="method" data-reveal>
-        <p className="eyebrow dark"><i /> The PascalX method</p>
+        <p className="eyebrow dark"><i /> The PasconX method</p>
         <div className="manifesto-grid" data-reveal-item>
           <h2><ScrollRevealText words={["Security", "is", "not", "a", "chapter.", "It", "is", "a", "way", "of", "seeing."]} breakAfter={[4]} accentFrom={8} /></h2>
           <div className="manifesto-copy"><p>We turn curious learners into methodical defenders through guided labs, live instruction, and the habits real security work requires.</p><a href="#programs" className="text-link" onClick={(event) => smoothNavigate(event, "#programs")}>See the programmes <Arrow /></a></div>
@@ -265,7 +290,7 @@ export default function Home() {
           <h2 id="training-bridge-heading">Learn the method.<br /><em>Make it yours.</em></h2>
           <div className="training-bridge-copy"><p>Good security work is a sequence of calm decisions. Each programme gives you a repeatable way to investigate a problem, validate what matters, and explain the next action clearly.</p><p className="training-bridge-note">You leave with more than notes: you leave with a workflow you can use again.</p></div>
         </div>
-        <ol className="practice-path" data-reveal-item aria-label="The PascalX practice loop">
+        <ol className="practice-path" data-reveal-item aria-label="The PasconX practice loop">
           <li><span className="practice-step">01 / RECOGNISE</span><h3>Read the surface.</h3><p>Break down a target, alert, or system into the signals worth investigating. Learn to separate useful evidence from background noise.</p></li>
           <li><span className="practice-step">02 / TEST</span><h3>Follow the evidence.</h3><p>Use guided labs to form a hypothesis, test it safely, and document each decision so someone else can reproduce your work.</p></li>
           <li><span className="practice-step">03 / REPORT</span><h3>Make the finding useful.</h3><p>Turn technical observations into a clear handoff: what happened, why it matters, and what should happen next.</p></li>
@@ -303,7 +328,7 @@ export default function Home() {
 
       <section className="faq-section" id="faq" data-reveal aria-labelledby="faq-heading">
         <div className="faq-heading"><p className="eyebrow"><i /> Common questions</p><h2 id="faq-heading">Know before<br /><em>you begin.</em></h2></div>
-        <div className="faq-list">{faqs.map(([question, answer], index) => <div className={`faq-item${openFaq === index ? " is-open" : ""}`} key={question}><button type="button" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{question}</strong><i aria-hidden="true">+</i></button><div className="faq-answer"><p>{answer}</p></div></div>)}</div>
+        <div className="faq-list">{faqs.map(([question, answer], index) => <div className={`faq-item${openFaq === index ? " is-open" : ""}`} key={question}><button type="button" suppressHydrationWarning aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? null : index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{question}</strong><i aria-hidden="true">+</i></button><div className="faq-answer"><p>{answer}</p></div></div>)}</div>
       </section>
 
       <SiteFooter />
