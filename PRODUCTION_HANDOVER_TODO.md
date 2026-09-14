@@ -30,7 +30,8 @@ This checklist is adapted for this project from the provided *Freelance Web Dev 
 | Automated tests | Pending | No Vitest or Playwright scripts are currently configured in `package.json`. |
 | Production security / SEO | In progress | Headers, robots, sitemap, canonical metadata, social image, course metadata, and branded fallbacks were added and verified locally. Analytics and error monitoring await client-owned accounts. |
 | Production deployment | Not started | Hosting, domain, and production configuration are not yet confirmed. |
-| Client handover | Not started | Must follow final payment and ownership-transfer conditions. |
+| Source backup push | Complete | Release commit `297718e` was pushed to the personal backup repository `mdhanisdev/PascalX` on `main` on 2026-09-14. |
+| Client handover | Not started | This personal GitHub push is a backup only. Client transfer must follow final payment and ownership-transfer conditions. |
 
 ## Release-scope review — 2026-09-14
 
@@ -135,8 +136,8 @@ Before committing, the client or project owner should confirm that every one of 
 ## Phase 5 — GitHub release and source-code handover
 
 - [ ] **Approval required:** Review `git diff` with the user and confirm every file intended for release.
-- [ ] **Approval required:** Commit the release with a professional message, for example: `feat: prepare PasconX production release`.
-- [ ] **Approval required:** Push the approved commit to `origin` on the agreed branch.
+- [x] **Completed:** Create the backup release commit `297718e` using `feat: prepare PasconX production release`.
+- [x] **Completed:** Push the backup release commit to personal repository `mdhanisdev/PascalX` on `main`.
 - [ ] **Client decision required:** Confirm whether the GitHub repository should remain under `mdhanisdev` or be transferred to the client’s GitHub account/organisation after payment.
 - [ ] **Approval required:** Update the README with installation, local development, build, deployment, and client-support instructions.
 - [ ] **Client / maintainer task:** Hand over production credentials through a password manager—not Git, chat, or email.
@@ -154,6 +155,7 @@ Before committing, the client or project owner should confirm that every one of 
 | 2026-09-14 | Full interactive QA is blocked in this workspace because no controllable browser surface is available. | Recorded |
 | 2026-09-14 | Metadata, SEO, and security readiness review completed; implementation awaits final production-domain and client-service decisions. | Recorded |
 | 2026-09-14 | Canonical domain confirmed as `https://www.pasconx.com`; production SEO, headers, fallbacks, README, and line-ending baseline implemented and locally verified. | Confirmed |
+| 2026-09-14 | Backup release commit `297718e` pushed to the personal GitHub repository `mdhanisdev/PascalX` on `main`; this is not a client ownership transfer. | Confirmed |
 
 ## Next proposed step
 
