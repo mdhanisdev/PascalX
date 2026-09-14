@@ -156,6 +156,7 @@ Before committing, the client or project owner should confirm that every one of 
 | 2026-09-14 | Metadata, SEO, and security readiness review completed; implementation awaits final production-domain and client-service decisions. | Recorded |
 | 2026-09-14 | Canonical domain confirmed as `https://www.pasconx.com`; production SEO, headers, fallbacks, README, and line-ending baseline implemented and locally verified. | Confirmed |
 | 2026-09-14 | Backup release commit `297718e` pushed to the personal GitHub repository `mdhanisdev/PascalX` on `main`; this is not a client ownership transfer. | Confirmed |
+| 2026-09-14 | Repeated mobile navigation taps now cancel stale scroll callbacks and resume Lenis before the latest requested scroll; lint and build passed. | Confirmed |
 
 ## Next proposed step
 

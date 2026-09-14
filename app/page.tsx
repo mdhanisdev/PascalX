@@ -64,6 +64,7 @@ export default function Home() {
   const handlePreloaderComplete = useCallback(() => setPageReady(true), []);
   const heroRef = useRef<HTMLElement>(null);
   const lastScrollYRef = useRef(0);
+  const navigationFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     lastScrollYRef.current = window.scrollY;
@@ -210,9 +211,15 @@ export default function Home() {
 
   function smoothNavigate(event: MouseEvent<HTMLAnchorElement>, target: string) {
     event.preventDefault();
+    if (navigationFrameRef.current !== null) {
+      window.cancelAnimationFrame(navigationFrameRef.current);
+      navigationFrameRef.current = null;
+    }
+
     const shouldResumeScroll = mobileNavOpen;
     setMobileNavOpen(false);
     const scrollToSection = () => {
+      navigationFrameRef.current = null;
       const section = document.getElementById(target.slice(1));
       if (!section) return;
 
@@ -221,14 +228,17 @@ export default function Home() {
       }
       const lenis = window.__pascalxLenis;
       if (lenis) {
-        lenis.scrollTo(section, { offset: -80, duration: 1.15 });
+        lenis.start();
+        lenis.scrollTo(section, { offset: -80, duration: 0.85, lock: false });
         return;
       }
       section.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
     if (shouldResumeScroll) {
-      window.requestAnimationFrame(() => window.requestAnimationFrame(scrollToSection));
+      navigationFrameRef.current = window.requestAnimationFrame(() => {
+        navigationFrameRef.current = window.requestAnimationFrame(scrollToSection);
+      });
       return;
     }
     scrollToSection();
