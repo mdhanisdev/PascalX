@@ -1,6 +1,17 @@
 import type { Metadata } from "next";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
+import { StructuredData } from "@/components/seo/StructuredData";
 import "./globals.css";
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "EducationalOrganization",
+  name: "PasconX",
+  url: "https://www.pasconx.com",
+  logo: "https://www.pasconx.com/icon.png",
+  description: "Live, practical cybersecurity training programmes for learners building real security skills.",
+  sameAs: ["https://www.instagram.com/pasconx_academy"],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.pasconx.com"),
@@ -31,6 +42,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full antialiased">
       <body suppressHydrationWarning className="min-h-full flex flex-col">
+        <StructuredData data={organizationSchema} />
+        <a className="skip-link" href="#main-content">Skip to main content</a>
         <SmoothScroll />
         {children}
       </body>

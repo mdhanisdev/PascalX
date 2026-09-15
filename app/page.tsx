@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MouseEvent, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { MouseEvent, useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { DirectionalTransition } from "@/components/ui/DirectionalTransition";
 import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
 import { TextLoop } from "@/components/ui/TextLoop";
@@ -10,10 +10,10 @@ import { Preloader } from "@/components/ui/Preloader";
 import { ProgrammeCarousel } from "@/components/courses/ProgrammeCarousel";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { courses as featureCourses } from "@/features/courses/data";
+import { media } from "@/features/media/assets";
 
 /* const legacyCourses: Course[] = [
   {
-    code: "PX/01",
     title: "Ethical Hacking Foundations",
     level: "Beginner → Intermediate",
     duration: "8 weeks · Live",
@@ -22,7 +22,6 @@ import { courses as featureCourses } from "@/features/courses/data";
     modules: ["Linux & network essentials", "Reconnaissance and OSINT", "Web application testing", "Reporting & responsible disclosure"],
   },
   {
-    code: "PX/02",
     title: "Web Application Security",
     level: "Intermediate",
     duration: "6 weeks · Live",
@@ -31,7 +30,6 @@ import { courses as featureCourses } from "@/features/courses/data";
     modules: ["OWASP Top 10", "Burp Suite workflows", "API security testing", "Secure remediation reviews"],
   },
   {
-    code: "PX/03",
     title: "SOC Analyst Launchpad",
     level: "Beginner → Job ready",
     duration: "10 weeks · Live",
@@ -44,10 +42,13 @@ import { courses as featureCourses } from "@/features/courses/data";
 import { faqs } from "@/features/faq/data";
 
 const courses = featureCourses;
+const subscribeToPreloaderPreference = () => () => {};
+const getServerPreloaderPreference = () => false;
+const getClientPreloaderPreference = () => window.sessionStorage.getItem("pascalx-skip-preloader") === "true";
 const upcomingProgrammes = [
-  { code: "PX/04", title: "Cloud Security Essentials", detail: "Identity, cloud posture, and practical hardening workflows.", image: "/course-images/cloud-security.webp" },
-  { code: "PX/05", title: "Threat Intelligence Lab", detail: "Turn open-source signals into useful defensive decisions.", image: "/course-images/threat-landscape.png" },
-  { code: "PX/06", title: "Incident Response Practice", detail: "Contain, investigate, and communicate through realistic scenarios.", image: "/course-images/ethical-hacking.jpg" },
+  { title: "DevOps Master Course", detail: "Master DevOps, CI/CD, cloud infrastructure, containers, automation, and real-world deployment workflows.", image: media.upcoming.devops },
+  { title: "Java Full Stack", detail: "Java backend development, modern frontend technologies, scalable web applications, and practical full-stack projects.", image: media.upcoming.javaFullStack },
+  { title: "Python Full Stack", detail: "Full-stack development, Django, modern JavaScript, REST APIs, and practical web application projects.", image: media.upcoming.pythonFullStack },
 ];
 
 function Arrow() {
@@ -55,13 +56,15 @@ function Arrow() {
 }
 
 export default function Home() {
-  const [contactSent, setContactSent] = useState(false);
+  const contactSent = false;
+  const setContactSent = Boolean;
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [navHidden, setNavHidden] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [skipPreloader] = useState(() => typeof window !== "undefined" && window.sessionStorage.getItem("pascalx-skip-preloader") === "true");
-  const [pageReady, setPageReady] = useState(skipPreloader);
-  const handlePreloaderComplete = useCallback(() => setPageReady(true), []);
+  const skipPreloader = useSyncExternalStore(subscribeToPreloaderPreference, getClientPreloaderPreference, getServerPreloaderPreference);
+  const [preloaderComplete, setPreloaderComplete] = useState(false);
+  const pageReady = skipPreloader || preloaderComplete;
+  const handlePreloaderComplete = useCallback(() => setPreloaderComplete(true), []);
   const heroRef = useRef<HTMLElement>(null);
   const lastScrollYRef = useRef(0);
   const navigationFrameRef = useRef<number | null>(null);
@@ -188,7 +191,7 @@ export default function Home() {
       "*PASCALX | COURSE ENQUIRY*",
       "",
       "*Programme*",
-      `${selectedCourse.title} (${selectedCourse.code})`,
+      selectedCourse.title,
       "",
       "*Learner details*",
       `Name: ${learnerName}`,
@@ -255,7 +258,7 @@ export default function Home() {
   return (
     <>
       {!skipPreloader && <Preloader onComplete={handlePreloaderComplete} />}
-      <DirectionalTransition><main className={`min-h-screen page-transition${pageReady ? " is-ready" : ""}`}>
+      <DirectionalTransition><main id="main-content" tabIndex={-1} className={`min-h-screen page-transition${pageReady ? " is-ready" : ""}`}>
       <nav className={`nav${navHidden && !mobileNavOpen ? " nav-hidden" : ""}`}>
         <div className="nav-inner"><Link className="brand" href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#top")} aria-label="PasconX home">PASCON<span>X</span></Link><div className="nav-links"><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#method")}>Approach</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#learning")}>Learning model</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#upcoming")}>Upcoming</Link><Link href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#contact")}>Contact</Link></div><Link className="nav-cta" href="/" scroll={false} onClick={(event) => smoothNavigate(event, "#programs")}>Explore programmes <Arrow /></Link><button className={`mobile-nav-toggle${mobileNavOpen ? " is-open" : ""}`} type="button" aria-label={mobileNavOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={mobileNavOpen} aria-controls="mobile-navigation" onClick={() => setMobileNavOpen((open) => !open)}><span /><span /><span /></button></div>
         {mobileNavOpen && <button className="mobile-nav-backdrop" type="button" aria-label="Close navigation menu" onClick={() => setMobileNavOpen(false)} />}
@@ -264,8 +267,8 @@ export default function Home() {
 
       <section className="hero" id="top" ref={heroRef}>
         <div className="hero-sticky">
-          <video className="hero-video" autoPlay muted loop playsInline preload="metadata">
-            <source src="/media/signal-grid.mp4" type="video/mp4" />
+          <video className="hero-video" aria-hidden="true" autoPlay muted loop playsInline preload="metadata">
+            <source src={media.videos.heroSignalGrid} type="video/mp4" />
           </video>
           <div className="scanlines" />
           <div className="hero-shade" />
@@ -288,7 +291,7 @@ export default function Home() {
       </section>
 
       <section className="video-break" aria-label="Students learning cybersecurity">
-        <video autoPlay muted loop playsInline preload="metadata"><source src="/media/classroom.mp4" type="video/mp4" /></video>
+        <video aria-hidden="true" autoPlay muted loop playsInline preload="metadata"><source src={media.videos.classroom} type="video/mp4" /></video>
         <div className="video-break-copy"><span>THE LAB IS OPEN</span><strong>Observe. Test. Defend.</strong></div>
       </section>
 
@@ -329,9 +332,9 @@ export default function Home() {
       <section className="upcoming-programmes" id="upcoming" data-reveal aria-labelledby="upcoming-programmes-heading">
         <div className="upcoming-programmes-heading" data-reveal-item><p className="eyebrow"><i /> On the horizon</p><h2 id="upcoming-programmes-heading">Upcoming<br /><em>programmes.</em></h2></div>
         <div className="upcoming-programmes-grid" data-reveal-item>
-          {upcomingProgrammes.map((programme) => <article className="upcoming-programme-card" key={programme.code}>
+          {upcomingProgrammes.map((programme) => <article className="upcoming-programme-card" key={programme.title}>
             <div className="upcoming-programme-image"><Image src={programme.image} alt="" fill sizes="(max-width: 720px) 88vw, 30vw" /></div>
-            <div className="upcoming-programme-copy"><span>{programme.code} / UPCOMING</span><h3>{programme.title}</h3><p>{programme.detail}</p><b>Coming soon</b></div>
+            <div className="upcoming-programme-copy"><span>UPCOMING PROGRAMME</span><h3>{programme.title}</h3><p>{programme.detail}</p><b>Coming soon</b></div>
           </article>)}
         </div>
       </section>
@@ -342,18 +345,18 @@ export default function Home() {
       </section>
 
       <SiteFooter />
-      <footer id="legacy-contact" hidden>
+      {false && <footer id="legacy-contact" hidden>
         <div className="footer-orbit" aria-hidden="true"><span /><span /><span /></div>
         <div className="footer-top"><p className="eyebrow"><i /> NEXT COHORT · LIVE ONLINE</p><span className="footer-signal">● SEATS OPEN</span></div>
         <div className="footer-cta"><h2>Make your<br /><em>next move.</em></h2><div><p>Choose a programme and reserve your live learning seat. Your tutor confirms the next steps personally on WhatsApp.</p><a href="#programs" className="footer-button">Explore programmes <Arrow /></a></div></div>
         <div className="footer-contact"><div><p className="eyebrow"><i /> Contact PascalX</p><h3>Have a question<br />before you start?</h3></div>{contactSent ? <div className="footer-contact-success"><span>âœ“</span><strong>Message received.</strong><p>This demo form is ready to connect to your contact workflow.</p><button type="button" onClick={() => setContactSent(false)}>Send another message</button></div> : <form className="footer-contact-form" onSubmit={(event) => { event.preventDefault(); setContactSent(true); }}><label>Full name<input required name="name" placeholder="Your name" /></label><label>Email address<input required type="email" name="email" placeholder="you@email.com" /></label><label>Message<textarea required name="message" rows={3} placeholder="How can we help?" /></label><button type="submit">Send message <Arrow /></button></form>}</div>
         <div className="footer-bottom"><div className="footer-brand">PASCAL<span>X</span></div><div className="footer-links"><a href="#programs">Programmes</a><a href="#method">Learning method</a><a href="#top">Back to top ↑</a></div><div className="footer-meta">© 2026 PASCALX<br />CYBERSECURITY LEARNING<br /><br />LEARN WITH PERMISSION.<br />PRACTISE WITH PURPOSE.</div></div>
-      </footer>
+      </footer>}
 
       {/*
         <section className="modal" role="dialog" aria-modal="true" aria-labelledby="course-title" onMouseDown={(event) => event.stopPropagation()}>
           <button className="close" onClick={closeModal} aria-label="Close course details">×</button>
-          {enquiryState === "success" ? <div className="success"><span>✓</span><p className="eyebrow"><i /> Enquiry ready</p><h2>Your message is<br /><em>ready to send.</em></h2><p>A prefilled WhatsApp message has opened. Send it to share your details with the tutor, who will contact you with the next steps.</p><button className="solid-button" onClick={closeModal}>Continue exploring <Arrow /></button></div> : <><div className="modal-course"><p className="eyebrow"><i /> {selectedCourse.code} · {selectedCourse.duration}</p><h2 id="course-title">{selectedCourse.title}</h2><p>{selectedCourse.overview}</p><div className="module-list">{selectedCourse.modules.map((module, index) => <span key={module}><b>0{index + 1}</b>{module}</span>)}</div></div><form className="checkout" onSubmit={submitEnquiry}><p>Enquire about this programme</p><strong>{selectedCourse.price}</strong><label>Full name<input required name="name" placeholder="Your name" /></label><label>WhatsApp number<input required name="whatsapp" type="tel" placeholder="+91 00000 00000" /></label><label>Email address<input required name="email" type="email" placeholder="you@email.com" /></label><button className="solid-button" type="submit">Continue on WhatsApp <Arrow /></button><small>No payment is taken here. Your tutor will confirm the next steps on WhatsApp.</small></form></>}
+          {enquiryState === "success" ? <div className="success"><span>✓</span><p className="eyebrow"><i /> Enquiry ready</p><h2>Your message is<br /><em>ready to send.</em></h2><p>A prefilled WhatsApp message has opened. Send it to share your details with the tutor, who will contact you with the next steps.</p><button className="solid-button" onClick={closeModal}>Continue exploring <Arrow /></button></div> : <><div className="modal-course"><p className="eyebrow"><i /> {selectedCourse.duration}</p><h2 id="course-title">{selectedCourse.title}</h2><p>{selectedCourse.overview}</p><div className="module-list">{selectedCourse.modules.map((module, index) => <span key={module}><b>0{index + 1}</b>{module}</span>)}</div></div><form className="checkout" onSubmit={submitEnquiry}><p>Enquire about this programme</p><strong>{selectedCourse.price}</strong><label>Full name<input required name="name" placeholder="Your name" /></label><label>WhatsApp number<input required name="whatsapp" type="tel" placeholder="+91 00000 00000" /></label><label>Email address<input required name="email" type="email" placeholder="you@email.com" /></label><button className="solid-button" type="submit">Continue on WhatsApp <Arrow /></button><small>No payment is taken here. Your tutor will confirm the next steps on WhatsApp.</small></form></>}
         </section>
       */}
       </main></DirectionalTransition>

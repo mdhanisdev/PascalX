@@ -6,6 +6,7 @@ import { CourseEnquiry } from "@/components/courses/CourseEnquiry";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { CourseBackLink } from "@/components/layout/CourseBackLink";
 import { CourseScrollReset } from "@/components/providers/CourseScrollReset";
+import { StructuredData } from "@/components/seo/StructuredData";
 import { DirectionalTransition } from "@/components/ui/DirectionalTransition";
 import { courses, getCourseBySlug } from "@/features/courses/data";
 
@@ -30,10 +31,21 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const course = getCourseBySlug(slug);
   if (!course) notFound();
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: course.title,
+    description: course.overview,
+    url: `https://www.pasconx.com/programmes/${course.slug}`,
+    provider: { "@type": "EducationalOrganization", name: "PasconX", url: "https://www.pasconx.com" },
+    educationalLevel: course.level,
+    hasCourseInstance: { "@type": "CourseInstance", courseMode: "online", courseWorkload: course.duration },
+  };
 
   return (
     <DirectionalTransition>
-    <main className="course-page" id="course-top">
+    <main className="course-page" id="main-content" tabIndex={-1}>
+      <StructuredData data={courseSchema} />
       <CourseScrollReset />
        <nav className="course-nav"><Link href="/" className="brand" transitionTypes={["nav-back"]}>PASCON<span>X</span></Link><CourseBackLink /></nav>
       <section className="course-hero">
@@ -51,7 +63,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ slug
         <CourseEnquiry course={course} />
       </section>
     </main>
-    <SiteFooter backToTopHref="#course-top" />
+    <SiteFooter backToTopHref="#main-content" />
     </DirectionalTransition>
   );
 }

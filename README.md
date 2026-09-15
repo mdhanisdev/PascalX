@@ -1,17 +1,24 @@
-# PasconX
+# PasconX Website — Client Handover
 
-Public marketing website for PasconX live cybersecurity training programmes.
+PasconX is a public marketing website for live cybersecurity training programmes. It is built with Next.js and can be deployed to Vercel or another Node.js-compatible host.
 
-## Technology
+## Project structure
 
-- Next.js 16 (App Router)
-- React 19 and TypeScript
-- Lenis smooth scrolling
-- Next.js image optimisation and generated SEO routes
+```text
+app/                 Pages, styles, metadata, icons, sitemap, and robots rules
+components/          Reusable course, layout, provider, SEO, and UI components
+features/            Course data, FAQ data, and Cloudinary media URLs
+public/              PasconX logo and downloadable course brochure
+tests/e2e/           Automated browser smoke tests
+.github/workflows/   GitHub Actions quality checks
+```
 
-## Local development
+## Requirements
 
-Requirements: Node.js 20.9 or later and npm.
+- Node.js 20.9 or later
+- npm
+
+## Run locally
 
 ```bash
 npm install
@@ -20,43 +27,61 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Quality checks
-
-Run these before every release:
+## Production commands
 
 ```bash
-npm run lint
-npm run build
-npm audit --omit=dev
+npm run lint         # code-quality check
+npm run build        # production build
+npm run test:e2e     # browser smoke tests
+npm audit --omit=dev # production dependency audit
+npm run verify       # runs all release checks
 ```
 
-## Production deployment
+The browser tests use Playwright. On a new computer, install its browser once:
 
-The canonical production URL is `https://www.pasconx.com`.
+```bash
+npx playwright install chromium
+```
 
-1. Create the hosting project in the client-owned hosting account.
-2. Connect the client-owned GitHub repository.
-3. Configure `www.pasconx.com` as the production domain and redirect the apex domain to the chosen canonical URL.
-4. Confirm HTTPS is active before launch.
-5. Deploy from the protected production branch after all quality checks pass.
-6. Verify `/robots.txt`, `/sitemap.xml`, both programme pages, WhatsApp enquiry links, phone/email links, and the 404 page on the live domain.
-7. Submit `https://www.pasconx.com/sitemap.xml` in the client-owned Google Search Console property.
+## Content management
 
-No environment variables are currently required. If any are added later, document safe placeholder names in `.env.example`; never commit real values.
+| Content | File to update |
+| --- | --- |
+| Main course titles, details, modules, outcomes, and brochure links | `features/courses/data.ts` |
+| Frequently asked questions | `features/faq/data.ts` |
+| All Cloudinary images and videos | `features/media/assets.ts` |
+| Website-wide styles | `app/globals.css` |
+| Logo, browser icon, Apple icon, and favicon | `app/icon.png`, `app/apple-icon.png`, `app/favicon.ico` |
 
-## Content updates
+### Cloudinary media
 
-- Course content is maintained in `features/courses/data.ts`.
-- FAQ content is maintained in `features/faq/data.ts`.
-- Public images, brochures, and video assets are in `public/`.
-- Before publishing an asset, confirm the client owns or licenses it for web use.
+All active course images and background videos are delivered from the Cloudinary account `fsaktlwi`. Update a Cloudinary delivery URL only in `features/media/assets.ts`; the website then uses it everywhere automatically.
 
-## Security and SEO
+The current site does not need Cloudinary API keys or environment variables. Do not commit Cloudinary API secrets to this repository.
 
-The app includes baseline response headers, robots rules, an XML sitemap, canonical metadata, course metadata, a generated social sharing image, and branded not-found/error fallbacks.
+## Deployment
 
-Before enabling analytics or error monitoring, create those services in the client-owned account and document the required environment variables. Do not place tracking IDs, API keys, or service credentials directly in source files.
+Canonical domain: `https://www.pasconx.com`
 
-## Handover
+1. Create the hosting project in a client-owned Vercel or hosting account.
+2. Connect this GitHub repository.
+3. Set `www.pasconx.com` as the production domain and redirect the apex domain to it.
+4. Deploy from `main` after `npm run verify` passes.
+5. Confirm HTTPS, home page, both course pages, WhatsApp links, brochure link, phone/email links, `/robots.txt`, `/sitemap.xml`, and the 404 page on the live domain.
+6. Submit `https://www.pasconx.com/sitemap.xml` to the client-owned Google Search Console property.
 
-Use [`PRODUCTION_HANDOVER_TODO.md`](./PRODUCTION_HANDOVER_TODO.md) as the live release and client-handover record. It tracks QA, deployment, source-code transfer, credential handover, client sign-off, and the warranty period.
+## Included production safeguards
+
+- Search-engine metadata, canonical URLs, sitemap, robots rules, Open Graph image, and structured course data
+- Security headers: CSP, HSTS, anti-framing, COOP, referrer policy, and permissions policy
+- Branded error and not-found pages
+- Accessible skip link, keyboard focus styles, and reduced-motion support
+- Automated GitHub Actions checks for linting, build, dependency audit, and browser tests
+- Browser, Apple, and legacy favicon support
+
+## Support notes
+
+- There are no required environment variables today.
+- Keep `package-lock.json` committed so deployments use the tested dependency versions.
+- Do not upload `node_modules`, `.next`, test results, or local editor folders to Git.
+- Client-owned hosting, GitHub, Cloudinary, analytics, monitoring, and DNS accounts are recommended for long-term ownership.
